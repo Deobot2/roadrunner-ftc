@@ -17,15 +17,14 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.openftc.easyopencv.OpenCvCamera;
+
 import java.util.*;
 
 //Maybe aren't needed
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 @Autonomous
-public class NewAuto extends LinearOpMode {
+public class BlueAuto extends LinearOpMode {
 
     //Set up object detection
     private static final boolean USE_WEBCAM = true;
