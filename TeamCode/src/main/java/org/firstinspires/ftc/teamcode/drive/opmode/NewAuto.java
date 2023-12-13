@@ -17,7 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-<<<<<<< HEAD:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/opmode/BlueAuto.java
+<<<<<<< HEAD:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/opmode/NewAuto.java
 
 =======
 >>>>>>> 7df5d0ff18ba9e936423f28033e1d329c3d08065:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/opmode/NewAuto.java
@@ -27,7 +27,7 @@ import java.util.*;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 
 @Autonomous
-public class BlueAuto extends LinearOpMode {
+public class NewAuto extends LinearOpMode {
 
     //Set up object detection
     private static final boolean USE_WEBCAM = true;
