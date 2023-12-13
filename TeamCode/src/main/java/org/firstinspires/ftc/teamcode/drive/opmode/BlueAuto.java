@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
+import android.annotation.SuppressLint;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -505,6 +507,7 @@ public class BlueAuto extends LinearOpMode {
     }   // end method initAprilTag()
 
     //Add telemetry about AprilTag detections
+    @SuppressLint("DefaultLocale")
     private void telemetryAprilTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
