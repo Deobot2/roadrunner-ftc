@@ -17,7 +17,10 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+<<<<<<< HEAD:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/opmode/BlueAuto.java
 
+=======
+>>>>>>> 7df5d0ff18ba9e936423f28033e1d329c3d08065:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/opmode/NewAuto.java
 import java.util.*;
 
 //Maybe aren't needed
@@ -45,7 +48,6 @@ public class BlueAuto extends LinearOpMode {
 
     //declare end effectors
     private Servo grabberControlLeft;
-    private Servo grabberControlRight;
 
     //declare retention bar
     private Servo retentionBarControl;
@@ -59,9 +61,6 @@ public class BlueAuto extends LinearOpMode {
     //For Switch Case
     private String stage = "detectionInit";
 
-    //Controls how long the code waits before checking if the detection model has recognized something or not
-    private long recogCheckWait = 3000;
-
     private long startTime;
 
     private AprilTagDetection targetAprilTag;
@@ -69,28 +68,10 @@ public class BlueAuto extends LinearOpMode {
     //Used to end the auto
     private boolean doneWithAuto = false;
 
-
-
-    //MAJOR CHANGES
-
-    //Strafing function added, but the inch to tick conversion still needs to be tested for
-    //Fixed rotation function, now rotates the specified difference instead of rotating to the specified angle
-    //example: if robot is at 90 degrees and setRotateTo(-90) is called,
-    //new output: robot rotates to 0 degrees,
-    //old output: robot rotates to -90 degrees (180 from original angle)
-
-    //Added AprilTag detection
-    //Added pathing for all spikes, none have been tested, leftSpike requires retention bar code that doesn't exist yet since retention bar wasn't mounted yet
-
-
-    //END OF MAJOR CHANGES
-
     //Given 3inch diameter mechanum wheels, 5000 ticks goes ~91 in
     //Therefore ~54.94505 ticks per inch
     double TICKINCONVERSION = 54.94505;
 
-    //NEEDS TO BE TESTED FOR
-    //30.0 WAS JUST A DEFAULT VALUE
     double STRAFEINCONVERSION = 60.000;
 
     double aprilTagStrafe = 0;
@@ -109,7 +90,7 @@ public class BlueAuto extends LinearOpMode {
 
         //init end effectors
         grabberControlLeft = hardwareMap.get(Servo.class, "grabberControlLeft");
-        grabberControlRight = hardwareMap.get(Servo.class, "grabberControlRight");
+        Servo grabberControlRight = hardwareMap.get(Servo.class, "grabberControlRight");
 
         //init retention bar
         retentionBarControl = hardwareMap.get(Servo.class, "retentionBarControl");
@@ -142,7 +123,7 @@ public class BlueAuto extends LinearOpMode {
         TrajectorySequence Left = drive.trajectorySequenceBuilder(startPose)
                 .forward(24)
                 .turn(Math.toRadians(-45))
-                .addDisplacementMarker(25, () -> {retentionBarControl.setPosition(0.9);})
+                .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
                 .forward(9.5)
                 .forward(-9.5)
                 .turn(Math.toRadians(130))
@@ -151,7 +132,7 @@ public class BlueAuto extends LinearOpMode {
                 .forward(28)
                 .turn(Math.toRadians(-83.5))
                 .forward(7.5)
-                .addDisplacementMarker(35.5, () -> {retentionBarControl.setPosition(0.9);})//bar goes up
+                .addDisplacementMarker(35.5, () -> retentionBarControl.setPosition(0.9))//bar goes up
                 .forward(-78.0)
                 .turn(Math.toRadians(170))
                 .build();
@@ -191,6 +172,8 @@ public class BlueAuto extends LinearOpMode {
             telemetry.addData("Stage",stage);
             telemetry.update();
 
+            //Controls how long the code waits before checking if the detection model has recognized something or not
+            long recogCheckWait = 3000;
             switch(stage){
                 case "detectionInit":
                     startTime = System.currentTimeMillis();
