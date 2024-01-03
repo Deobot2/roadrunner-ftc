@@ -25,7 +25,7 @@ import java.util.*;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 
 @Autonomous
-public class RedAuto extends LinearOpMode {
+public class LeftRedAuto extends LinearOpMode {
 
     //Set up object detection
     private static final boolean USE_WEBCAM = true;
