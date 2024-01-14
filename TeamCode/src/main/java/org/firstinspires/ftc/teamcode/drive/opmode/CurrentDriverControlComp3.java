@@ -1,28 +1,17 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 
-import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
-
-import org.openftc.easyopencv.OpenCvCamera;
-
-
-
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Gyroscope;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.openftc.easyopencv.OpenCvCamera;
 
 @TeleOp(group = "drive")
-public class DriverControlComp3 extends LinearOpMode {
+public class CurrentDriverControlComp3 extends LinearOpMode {
 
     //initialize motors
     private DcMotor frontRight;
@@ -246,7 +235,7 @@ public class DriverControlComp3 extends LinearOpMode {
             }
             if(gamepad2.left_stick_button && gamepad2.dpad_left){
                 //GrabPixel
-                grabberControlLeftPosition = 0.8;
+                grabberControlLeftPosition = 0.9;
             }
             if(gamepad2.left_stick_button && gamepad2.dpad_right){
                 //GrabPixel
@@ -265,10 +254,10 @@ public class DriverControlComp3 extends LinearOpMode {
             grabberControlRight.setPosition(grabberControlRightPosition);
 
 
-            if(gamepad2.dpad_up && launcherControl.getPosition() != 1){
+            if(gamepad2.y && launcherControl.getPosition() != 1){
                 launcherControl.setPosition(.60);
             }
-            if(gamepad2.dpad_down && launcherControl.getPosition() != 0) {
+            if(gamepad2.b && launcherControl.getPosition() != 0) {
                 launcherControl.setPosition(0.1);
             }
 
