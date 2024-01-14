@@ -25,13 +25,13 @@ import java.util.*;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 
 @Autonomous
-public class LeftRedAuto extends LinearOpMode {
+public class LeftBlueAuto extends LinearOpMode {
 
     //Set up object detection
     private static final boolean USE_WEBCAM = true;
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/red_cone.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/blue_cone.tflite";
     private static final String[] LABELS = {
-            "Red Cone ",
+            "Blue Cone ",
     };
     //declare camera detection stuff
     private TfodProcessor tfod;
@@ -118,28 +118,28 @@ public class LeftRedAuto extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
 
-        TrajectorySequence Left = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence Right = drive.trajectorySequenceBuilder(startPose)
                 .forward(24)
-                .turn(Math.toRadians(-45))
+                .turn(Math.toRadians(45))
                 .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
                 .forward(9.5)
                 .forward(-9.5)
-                .turn(Math.toRadians(130))
-                .forward(64)
+                .turn(Math.toRadians(-130))
+                .forward(32)
                 .build();
-        TrajectorySequence Right = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence Left = drive.trajectorySequenceBuilder(startPose)
                 .forward(28)
-                .turn(Math.toRadians(-83.5))
+                .turn(Math.toRadians(83.5))
                 .forward(7.5)
                 .addDisplacementMarker(35.5, () -> retentionBarControl.setPosition(0.9))//bar goes up
-                .forward(-78.0)
-                .turn(Math.toRadians(170))
+                .forward(-46.0)
+                .turn(Math.toRadians(-170))
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(startPose)
                 .forward(30.0)
                 .forward(-7.0)
-                .turn(Math.toRadians(90))
-                .forward(64)
+                .turn(Math.toRadians(-90))
+                .forward(32)
                 .addDisplacementMarker(101, () -> {List<AprilTagDetection> currentDetections = aprilTag.getDetections();
                     telemetry.addData("# of AprilTags Detected", currentDetections.size());
                     for(AprilTagDetection detection : currentDetections) {

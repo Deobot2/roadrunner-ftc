@@ -125,20 +125,21 @@ public class RightRedAuto extends LinearOpMode {
                 .forward(9.5)
                 .forward(-9.5)
                 .turn(Math.toRadians(130))
+                .forward(32)
                 .build();
         TrajectorySequence Right = drive.trajectorySequenceBuilder(startPose)
                 .forward(28)
                 .turn(Math.toRadians(-83.5))
                 .forward(7.5)
                 .addDisplacementMarker(35.5, () -> retentionBarControl.setPosition(0.9))//bar goes up
-                .forward(-78.0)
+                .forward(-46.0)
                 .turn(Math.toRadians(170))
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(startPose)
                 .forward(30.0)
                 .forward(-7.0)
                 .turn(Math.toRadians(90))
-                .forward(64)
+                .forward(32)
                 .addDisplacementMarker(101, () -> {List<AprilTagDetection> currentDetections = aprilTag.getDetections();
                     telemetry.addData("# of AprilTags Detected", currentDetections.size());
                     for(AprilTagDetection detection : currentDetections) {
