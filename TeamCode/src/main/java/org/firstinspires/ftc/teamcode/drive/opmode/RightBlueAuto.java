@@ -99,8 +99,10 @@ public class RightBlueAuto extends LinearOpMode {
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         //Reversing right side so that runTo is positive
-        //frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         //Make sure motors are set up at default
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -113,12 +115,9 @@ public class RightBlueAuto extends LinearOpMode {
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d startPose = new Pose2d(0, 0, 0);
-
-        drive.setPoseEstimate(startPose);
 
 
-        TrajectorySequence Right = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence Right = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(24)
                 .turn(Math.toRadians(45))
                 .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
@@ -127,7 +126,7 @@ public class RightBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(-130))
                 .forward(64)
                 .build();
-        TrajectorySequence Left = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(28)
                 .turn(Math.toRadians(83.5))
                 .forward(7.5)
@@ -135,7 +134,7 @@ public class RightBlueAuto extends LinearOpMode {
                 .forward(-78.0)
                 .turn(Math.toRadians(-170))
                 .build();
-        TrajectorySequence Middle = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(30.0)
                 .forward(-7.0)
                 .turn(Math.toRadians(-90))
@@ -148,7 +147,7 @@ public class RightBlueAuto extends LinearOpMode {
                         }
                     }
                     if(targetAprilTag != null){
-                        TrajectorySequence April = drive.trajectorySequenceBuilder(startPose)
+                        TrajectorySequence April = drive.trajectorySequenceBuilder(new Pose2d())
                                 .strafeRight(targetAprilTag.ftcPose.x)
                                 .build();
                         aprilTagStrafe = targetAprilTag.ftcPose.x;

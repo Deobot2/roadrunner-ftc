@@ -133,8 +133,8 @@ public class CurrentDriverControlComp3 extends LinearOpMode {
                 manualControl = 0.2;
             }
             double armPower = (up - down + manualControl);
-            armControlLeft.setPower(armPower);
-            armControlRight.setPower(armPower);
+            armControlLeft.setPower(armPower*0.5);
+            armControlRight.setPower(armPower*0.5);
 
 
 
