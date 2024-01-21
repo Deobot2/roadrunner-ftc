@@ -29,7 +29,7 @@ public class RightBlueAuto extends LinearOpMode {
 
     //Set up object detection
     private static final boolean USE_WEBCAM = true;
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/blue_cone.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/light_blue_cone.tflite";
     private static final String[] LABELS = {
             "Blue Cone ",
     };
@@ -94,6 +94,7 @@ public class RightBlueAuto extends LinearOpMode {
         retentionBarControl = hardwareMap.get(Servo.class, "retentionBarControl");
 
         //init motors
+        /*
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
@@ -108,7 +109,7 @@ public class RightBlueAuto extends LinearOpMode {
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        */
         telemetry.addLine("Init Done");
 
         telemetry.update();
@@ -119,25 +120,25 @@ public class RightBlueAuto extends LinearOpMode {
 
         TrajectorySequence Right = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(24)
-                .turn(Math.toRadians(45))
+                .turn(Math.toRadians(-45))
                 .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
                 .forward(9.5)
                 .forward(-9.5)
-                .turn(Math.toRadians(-130))
+                .turn(Math.toRadians(130))
                 .forward(64)
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(28)
-                .turn(Math.toRadians(83.5))
-                .forward(7.5)
-                .addDisplacementMarker(35.5, () -> retentionBarControl.setPosition(0.9))//bar goes up
+                .turn(Math.toRadians(-83.5))
+                .forward(-7.5)
+                .addDisplacementMarker(26.0, () -> retentionBarControl.setPosition(0.9))//bar goes up
                 .forward(-78.0)
-                .turn(Math.toRadians(-170))
+                .turn(Math.toRadians(170))
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(30.0)
                 .forward(-7.0)
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(90))
                 .forward(64)
                 .addDisplacementMarker(101, () -> {List<AprilTagDetection> currentDetections = aprilTag.getDetections();
                     telemetry.addData("# of AprilTags Detected", currentDetections.size());
@@ -218,13 +219,13 @@ public class RightBlueAuto extends LinearOpMode {
                 case "rightSpike":
                     coneLocation = 3;
                     drive.followTrajectorySequence(Right);
-                    telemetry.addLine("We going left");
+                    telemetry.addLine("We going right");
                     telemetry.update();
                     stage = "aprilTagInit";
                     break;
                 case "leftSpike":
                     coneLocation = 1;
-                    telemetry.addLine("We going right");
+                    telemetry.addLine("We going left");
                     telemetry.update();
                     drive.followTrajectorySequence(Left);
                     stage = "putInfrontBoard";
@@ -462,7 +463,7 @@ public class RightBlueAuto extends LinearOpMode {
         visionPortal = builder.build();
 
         // Set confidence threshold for TFOD recognitions, at any time.
-        //tfod.setMinResultConfidence(0.75f);
+        tfod.setMinResultConfidence(0.90f);
 
         // Disable or re-enable the TFOD processor at any time.
         //visionPortal.setProcessorEnabled(tfod, true);
