@@ -129,10 +129,10 @@ public class RightBlueAuto extends LinearOpMode {
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(28)
-                .turn(Math.toRadians(-83.5))
+                .turn(Math.toRadians(-87))
                 .forward(-7.5)
-                .addDisplacementMarker(26.0, () -> retentionBarControl.setPosition(0.9))//bar goes up
-                .forward(-78.0)
+                .addDisplacementMarker(28.7, () -> retentionBarControl.setPosition(0.9))//bar goes up
+                .forward(-80.0)
                 .turn(Math.toRadians(170))
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
@@ -172,7 +172,7 @@ public class RightBlueAuto extends LinearOpMode {
             telemetry.update();
 
             //Controls how long the code waits before checking if the detection model has recognized something or not
-            long recogCheckWait = 3000;
+            long recogCheckWait = 8000;
             switch(stage){
                 case "detectionInit":
                     startTime = System.currentTimeMillis();
