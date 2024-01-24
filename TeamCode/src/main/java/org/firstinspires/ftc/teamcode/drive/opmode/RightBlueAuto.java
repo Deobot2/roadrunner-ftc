@@ -128,12 +128,15 @@ public class RightBlueAuto extends LinearOpMode {
                 .forward(64)
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
-                .forward(28)
-                .turn(Math.toRadians(-87))
-                .forward(-7.5)
-                .addDisplacementMarker(28.7, () -> retentionBarControl.setPosition(0.9))//bar goes up
-                .forward(-80.0)
-                .turn(Math.toRadians(170))
+                .forward(24)
+                .turn(Math.toRadians(90))
+                .addDisplacementMarker(26.0, () -> retentionBarControl.setPosition(0.9))
+                .forward(9.5)
+                .forward(-9.5)
+                .turn(Math.toRadians(-90))
+                .forward(25.0)
+                .turn(Math.toRadians(90))
+                .forward(-75)
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(30.0)
@@ -228,7 +231,7 @@ public class RightBlueAuto extends LinearOpMode {
                     telemetry.addLine("We going left");
                     telemetry.update();
                     drive.followTrajectorySequence(Left);
-                    stage = "putInfrontBoard";
+                    stage = "aprilTagInit";
                     break;
                 case "putInfrontBoard":
                     requestOpModeStop();
