@@ -31,7 +31,7 @@ public class RightBlueAuto extends LinearOpMode {
     private static final boolean USE_WEBCAM = true;
     private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/light_blue_cone.tflite";
     private static final String[] LABELS = {
-            "Blue Cone ",
+            "Light Blue Cone ",
     };
     //declare camera detection stuff
     private TfodProcessor tfod;
@@ -128,18 +128,18 @@ public class RightBlueAuto extends LinearOpMode {
                 .forward(64)
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
-                .forward(24.5)
+                .forward(26.0)
                 .turn(Math.toRadians(90))
                 .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
-                .forward(7.1)
-                .forward(-7.2)
+                .forward(6.75)
+                .forward(-7.3)
                 .turn(Math.toRadians(-90))
-                .forward(25.0)
+                .forward(23.5)
                 .turn(Math.toRadians(-90))
                 .forward(-75)
                 .turn(Math.toRadians(-180))
-                .strafeLeft(32)
-                .addDisplacementMarker(112, () -> retentionBarControl.setPosition(-0.9))
+                .strafeLeft(29.5)
+                .addDisplacementMarker(175, () -> retentionBarControl.setPosition(-0.9))
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(30.0)
