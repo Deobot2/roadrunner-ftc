@@ -49,13 +49,13 @@ public class CurrentDriverControlComp3 extends LinearOpMode {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
 
         //retentionBarControl = hardwareMap.get(DcMotor.class, "retentionBarControl");
-
+        launcherControl = hardwareMap.get(Servo.class,"launcherControl");
         armControlLeft = hardwareMap.get(DcMotor.class, "armControlLeft");
         armControlRight = hardwareMap.get(DcMotor.class, "armControlRight");
         retentionBarControl = hardwareMap.get(Servo.class, "retentionBarControl");
         grabberControlLeft = hardwareMap.get(Servo.class, "grabberControlLeft");
         grabberControlRight = hardwareMap.get(Servo.class, "grabberControlRight");
-        launcherControl = hardwareMap.get(Servo.class,"launcherControl");
+
 
         //touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor");
 

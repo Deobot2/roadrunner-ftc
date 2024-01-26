@@ -96,8 +96,8 @@ public class RightBlueAuto extends LinearOpMode {
         retentionBarControl = hardwareMap.get(Servo.class, "retentionBarControl");
 
         //init motors
-        armControlLeft = hardwareMap.get(DcMotor.class, "armControlLeft");
         armControlRight = hardwareMap.get(DcMotor.class, "armControlRight");
+        armControlLeft = hardwareMap.get(DcMotor.class, "armControlLeft");
         /*
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
