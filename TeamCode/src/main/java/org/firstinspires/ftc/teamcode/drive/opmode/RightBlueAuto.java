@@ -43,6 +43,8 @@ public class RightBlueAuto extends LinearOpMode {
     private DcMotor frontLeft;
     private DcMotor backRight;
     private DcMotor backLeft;
+    private DcMotor armControlLeft;
+    private DcMotor armControlRight;
 
     //declare end effectors
     private Servo grabberControlLeft;
@@ -94,6 +96,8 @@ public class RightBlueAuto extends LinearOpMode {
         retentionBarControl = hardwareMap.get(Servo.class, "retentionBarControl");
 
         //init motors
+        armControlLeft = hardwareMap.get(DcMotor.class, "armControlLeft");
+        armControlRight = hardwareMap.get(DcMotor.class, "armControlRight");
         /*
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
@@ -122,54 +126,66 @@ public class RightBlueAuto extends LinearOpMode {
                 .forward(26.0)
                 .turn(Math.toRadians(-90))
                 .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.0))
                 .forward(6.75)
                 .forward(-7.3)
                 .turn(Math.toRadians(90))
                 .forward(23.5)
                 .turn(Math.toRadians(-90))
-                .forward(-75)
+                .forward(-78)
                 .turn(Math.toRadians(-180))
-                .strafeLeft(29.5)
-                .addDisplacementMarker(175, () -> retentionBarControl.setPosition(-0.9))
+                .strafeLeft(20.5)
+                .addDisplacementMarker(169, () -> {
+                    armControlLeft.setPower(1.0);
+                    armControlRight.setPower(1.0);
+                    while (armControlLeft.getCurrentPosition() < 1500) {}
+                    armControlLeft.setPower(0.0);
+                    armControlRight.setPower(0.0);
+                    grabberControlLeft.setPosition(0.1);
+                    grabberControlRight.setPosition(0.1);
+                })
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(90))
                 .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.0))
                 .forward(6.75)
                 .forward(-7.3)
                 .turn(Math.toRadians(-90))
                 .forward(23.5)
                 .turn(Math.toRadians(-90))
-                .forward(-75)
+                .forward(-78)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(29.5)
-                .addDisplacementMarker(175, () -> retentionBarControl.setPosition(-0.9))
+                .addDisplacementMarker(178, () -> {
+                    armControlLeft.setPower(1.0);
+                    armControlRight.setPower(1.0);
+                    while (armControlLeft.getCurrentPosition() < 1500) {}
+                    armControlLeft.setPower(0.0);
+                    armControlRight.setPower(0.0);
+                    grabberControlLeft.setPosition(0.1);
+                    grabberControlRight.setPosition(0.1);
+                })
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(30.0)
                 .forward(-7.0)
                 .turn(Math.toRadians(90))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(0.9))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.0))
                 .forward(64)
-                .addDisplacementMarker(101, () -> {List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-                    telemetry.addData("# of AprilTags Detected", currentDetections.size());
-                    for(AprilTagDetection detection : currentDetections) {
-                        if(detection.id == coneLocation){
-                            targetAprilTag = detection;
-                        }
-                    }
-                    if(targetAprilTag != null){
-                        TrajectorySequence April = drive.trajectorySequenceBuilder(new Pose2d())
-                                .strafeRight(targetAprilTag.ftcPose.x)
-                                .build();
-                        aprilTagStrafe = targetAprilTag.ftcPose.x;
-                        drive.followTrajectorySequence(April);
-
-                    }else{
-                        //since we can't tell the x offset without metadata, we are just going to skip this
-                    }})
-                .forward(16)// add arm lower in the future
-                .addDisplacementMarker(101 + aprilTagStrafe, () -> {grabberControlLeft.setPosition(0.45);})
+                .forward(19)// add arm lower in the future
+                .strafeRight(5)
+                .addDisplacementMarker(183, () -> {
+                    armControlLeft.setPower(1.0);
+                    armControlRight.setPower(1.0);
+                    while (armControlLeft.getCurrentPosition() < 1500) {}
+                    armControlLeft.setPower(0.0);
+                    armControlRight.setPower(0.0);
+                    grabberControlLeft.setPosition(0.1);
+                    grabberControlRight.setPosition(0.1);
+                })
                 .build();
 
         // Wait for the game to start (driver presses PLAY)
