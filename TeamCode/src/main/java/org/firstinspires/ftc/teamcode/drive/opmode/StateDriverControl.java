@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -23,7 +24,7 @@ public class StateDriverControl extends LinearOpMode {
     private DcMotor armControl;
     private Servo retentionBarControl;
 
-    private Servo grabberControl;
+    private CRServo grabberControl;
 
 
     //private TouchSensor touchSensor;
@@ -46,7 +47,7 @@ public class StateDriverControl extends LinearOpMode {
 
         armControl = hardwareMap.get(DcMotor.class, "armControl");
         retentionBarControl = hardwareMap.get(Servo.class, "retentionBarControl");
-        grabberControl = hardwareMap.get(Servo.class, "grabberControl");
+        grabberControl = hardwareMap.get(CRServo.class, "grabberControl");
 
 
         double frontLeftPower;
@@ -113,10 +114,10 @@ public class StateDriverControl extends LinearOpMode {
                 if(armControl.getCurrentPosition() < baseArmHeight){
                     baseArmHeight = armControl.getCurrentPosition();
                 }
-                manualControl = -0.2;
+                manualControl = -0.5;
             }
             if(gamepad2.dpad_up) {
-                manualControl = 0.2;
+                manualControl = 0.5;
             }
             double armPower = (up - down + manualControl);
             armControl.setPower(armPower*0.5);
@@ -209,15 +210,17 @@ public class StateDriverControl extends LinearOpMode {
 
 
 
-
+            double grabberControlPower = 0;
             if(gamepad2.right_stick_button){
                 //ReleasePixel
-                grabberControl.setDirection(Servo.Direction.FORWARD);
+                grabberControlPower = 0.5;
             }
             if(gamepad2.left_stick_button){
-                //ReleasePixel
-                grabberControl.setDirection(Servo.Direction.REVERSE);
+                //GrabPixel
+                grabberControlPower = -0.5;
             }
+
+            grabberControl.setPower(grabberControlPower);
 
             /*if (touchSensor.isPressed()) {
                 telemetry.addLine("Cone Aligned = True");
