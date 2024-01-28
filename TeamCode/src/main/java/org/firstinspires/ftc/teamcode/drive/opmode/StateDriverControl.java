@@ -20,8 +20,7 @@ public class StateDriverControl extends LinearOpMode {
     private DcMotor backLeft;
 
 
-    private DcMotor armControlLeft;
-    private DcMotor armControlRight;
+    private DcMotor armControl;
     private Servo retentionBarControl;
 
     private Servo grabberControl;
@@ -39,14 +38,13 @@ public class StateDriverControl extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        //init motors
+        //init driveTrain motors
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
 
-        armControlLeft = hardwareMap.get(DcMotor.class, "armControlLeft");
-        armControlRight = hardwareMap.get(DcMotor.class, "armControlRight");
+        armControl = hardwareMap.get(DcMotor.class, "armControl");
         retentionBarControl = hardwareMap.get(Servo.class, "retentionBarControl");
         grabberControl = hardwareMap.get(Servo.class, "grabberControl");
 
@@ -58,7 +56,7 @@ public class StateDriverControl extends LinearOpMode {
 
         retentionBarPosition = retentionBarControl.getPosition();
 
-        int baseArmHeight = armControlLeft.getCurrentPosition();
+        int baseArmHeight = armControl.getCurrentPosition();
 
         //double check which motors are reversed, assumption is right-side
         //backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -66,7 +64,6 @@ public class StateDriverControl extends LinearOpMode {
         //frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        armControlRight.setDirection(DcMotorSimple.Direction.REVERSE);
    /*
    frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
    backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -109,12 +106,12 @@ public class StateDriverControl extends LinearOpMode {
             double manualControl = 0;
             double strength = 0.5;
             up = gamepad2.right_trigger;
-            if(armControlLeft.getCurrentPosition() >= baseArmHeight) {
+            if(armControl.getCurrentPosition() >= baseArmHeight) {
                 down = gamepad2.left_trigger;
             }
             if(gamepad2.dpad_down){
-                if(armControlLeft.getCurrentPosition() < baseArmHeight){
-                    baseArmHeight = armControlLeft.getCurrentPosition();
+                if(armControl.getCurrentPosition() < baseArmHeight){
+                    baseArmHeight = armControl.getCurrentPosition();
                 }
                 manualControl = -0.2;
             }
@@ -122,8 +119,7 @@ public class StateDriverControl extends LinearOpMode {
                 manualControl = 0.2;
             }
             double armPower = (up - down + manualControl);
-            armControlLeft.setPower(armPower*0.5);
-            armControlRight.setPower(armPower*0.5);
+            armControl.setPower(armPower*0.5);
 
 
 
@@ -256,11 +252,11 @@ public class StateDriverControl extends LinearOpMode {
                 telemetry.addLine("Power!");
             }
             telemetry.addData("Arm Control Speed",
-                    armControlLeft.getPower());
+                    armControl.getPower());
             telemetry.addData("ArmControlBaseHeight",
                     baseArmHeight);
             telemetry.addData("ArmControlPosition",
-                    armControlLeft.getCurrentPosition());
+                    armControl.getCurrentPosition());
 
             telemetry.addData("RetentionBarPosition",
                     retentionBarControl.getPosition());
