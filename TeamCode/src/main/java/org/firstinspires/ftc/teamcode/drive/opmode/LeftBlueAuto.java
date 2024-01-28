@@ -132,7 +132,7 @@ public class LeftBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .forward(23.5)
                 .turn(Math.toRadians(-90))
-                .forward(-77.5 + 14.0)
+                .forward(-77.5 + 48.0)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(20.5)
                 .addDisplacementMarker(169, () -> {
@@ -155,7 +155,7 @@ public class LeftBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(-90))
                 .forward(23.5)
                 .turn(Math.toRadians(-90))
-                .forward(-79 + 14.0)
+                .forward(-79 + 48.0)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(31.5)
                 .addDisplacementMarker(178, () -> {
@@ -174,7 +174,7 @@ public class LeftBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .addDisplacementMarker(20, () -> retentionBarControl.setPosition(0.9))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
-                .forward(60 - 14.0)
+                .forward(60 - 48.0)
                 .forward(19)// add arm lower in the future
                 .strafeRight(5)
                 .addDisplacementMarker(183, () -> {
