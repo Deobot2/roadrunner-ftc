@@ -3,6 +3,7 @@ import android.annotation.SuppressLint;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -43,11 +44,9 @@ public class LeftBlueAuto extends LinearOpMode {
     private DcMotor frontLeft;
     private DcMotor backRight;
     private DcMotor backLeft;
-    private DcMotor armControlLeft;
-    private DcMotor armControlRight;
-
+    private DcMotor armControl;
     //declare end effectors
-    private Servo grabberControlLeft;
+    private CRServo grabberControl;
 
     //declare retention bar
     private Servo retentionBarControl;
@@ -89,15 +88,14 @@ public class LeftBlueAuto extends LinearOpMode {
         updateOrientation();
 
         //init end effectors
-        grabberControlLeft = hardwareMap.get(Servo.class, "grabberControlLeft");
-        Servo grabberControlRight = hardwareMap.get(Servo.class, "grabberControlRight");
+        //grabberControlLeft = hardwareMap.get(Servo.class, "grabberControlLeft");
+        grabberControl = hardwareMap.get(CRServo.class, "grabberControl");
 
         //init retention bar
         retentionBarControl = hardwareMap.get(Servo.class, "retentionBarControl");
 
         //init motors
-        armControlRight = hardwareMap.get(DcMotor.class, "armControlRight");
-        armControlLeft = hardwareMap.get(DcMotor.class, "armControlLeft");
+        armControl = hardwareMap.get(DcMotor.class, "armControl");
         /*
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
@@ -136,13 +134,14 @@ public class LeftBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(-180))
                 .strafeLeft(20.5)
                 .addDisplacementMarker(169, () -> {
-                    armControlLeft.setPower(1.0);
-                    armControlRight.setPower(1.0);
-                    while (armControlLeft.getCurrentPosition() < 1500) {}
-                    armControlLeft.setPower(0.0);
-                    armControlRight.setPower(0.0);
-                    grabberControlLeft.setPosition(0.1);
-                    grabberControlRight.setPosition(0.1);
+                    armControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() < 1500) {}
+                    armControl.setPower(-1.0);
+                    //grabberControlLeft.setPosition(0.1);
+                    grabberControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() > 200) {}
+                    armControl.setPower(0.0);
+                    grabberControl.setPower(0.0);
                 })
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
@@ -159,13 +158,14 @@ public class LeftBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(-180))
                 .strafeLeft(31.5)
                 .addDisplacementMarker(178, () -> {
-                    armControlLeft.setPower(1.0);
-                    armControlRight.setPower(1.0);
-                    while (armControlLeft.getCurrentPosition() < 1500) {}
-                    armControlLeft.setPower(0.0);
-                    armControlRight.setPower(0.0);
-                    grabberControlLeft.setPosition(0.1);
-                    grabberControlRight.setPosition(0.1);
+                    armControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() < 1500) {}
+                    armControl.setPower(-1.0);
+                    //grabberControlLeft.setPosition(0.1);
+                    grabberControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() > 200) {}
+                    armControl.setPower(0.0);
+                    grabberControl.setPower(0.0);
                 })
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
@@ -178,13 +178,14 @@ public class LeftBlueAuto extends LinearOpMode {
                 .forward(19)// add arm lower in the future
                 .strafeRight(5)
                 .addDisplacementMarker(183, () -> {
-                    armControlLeft.setPower(1.0);
-                    armControlRight.setPower(1.0);
-                    while (armControlLeft.getCurrentPosition() < 1500) {}
-                    armControlLeft.setPower(0.0);
-                    armControlRight.setPower(0.0);
-                    grabberControlLeft.setPosition(0.1);
-                    grabberControlRight.setPosition(0.1);
+                    armControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() < 1500) {}
+                    armControl.setPower(-1.0);
+                    //grabberControlLeft.setPosition(0.1);
+                    grabberControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() > 200) {}
+                    armControl.setPower(0.0);
+                    grabberControl.setPower(0.0);
                 })
                 .build();
 
@@ -284,7 +285,7 @@ public class LeftBlueAuto extends LinearOpMode {
                     //Raise the arm to the right height
                     //Distance to bring the arm to the backboard
                     setRunTo(16.0);
-                    grabberControlLeft.setPosition(0.45);
+                    //grabberControlLeft.setPosition(0.45);
                     stage = "park";
                     break;
                 case "park":

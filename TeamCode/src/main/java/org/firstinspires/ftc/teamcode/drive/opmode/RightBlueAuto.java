@@ -136,10 +136,13 @@ public class RightBlueAuto extends LinearOpMode {
                 .strafeLeft(20.5)
                 .addDisplacementMarker(169, () -> {
                     armControl.setPower(1.0);
-
                     while (armControl.getCurrentPosition() < 1500) {}
+                    armControl.setPower(-1.0);
+                    //grabberControlLeft.setPosition(0.1);
+                    grabberControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() > 200) {}
                     armControl.setPower(0.0);
-                    grabberControl.setPower(0.5);
+                    grabberControl.setPower(0.0);
 
                 })
                 .build();
@@ -159,15 +162,12 @@ public class RightBlueAuto extends LinearOpMode {
                 .addDisplacementMarker(178, () -> {
                     armControl.setPower(1.0);
                     while (armControl.getCurrentPosition() < 1500) {}
+                    armControl.setPower(-1.0);
+                    //grabberControlLeft.setPosition(0.1);
+                    grabberControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() > 200) {}
                     armControl.setPower(0.0);
-                    grabberControl.setPower(0.5);
-                    long pixelReleaseTime = 3000;
-                    long startTime = System.currentTimeMillis();
-                    long curTime = System.currentTimeMillis();
-                    while(curTime - startTime < pixelReleaseTime){
-                        curTime = System.currentTimeMillis();
-                    }
-                    grabberControl.setPower(0);
+                    grabberControl.setPower(0.0);
 
 
                 })
@@ -183,13 +183,13 @@ public class RightBlueAuto extends LinearOpMode {
                 .strafeRight(5)
                 .addDisplacementMarker(183, () -> {
                     armControl.setPower(1.0);
-
                     while (armControl.getCurrentPosition() < 1500) {}
+                    armControl.setPower(-1.0);
+                    //grabberControlLeft.setPosition(0.1);
+                    grabberControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() > 200) {}
                     armControl.setPower(0.0);
-
-                    grabberControl.setPower(0.5);
-
-
+                    grabberControl.setPower(0.0);
                 })
                 .build();
 
