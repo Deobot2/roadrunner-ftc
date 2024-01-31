@@ -213,11 +213,11 @@ public class StateDriverControl extends LinearOpMode {
             double grabberControlPower = 0;
             if(gamepad2.right_stick_button){
                 //ReleasePixel
-                grabberControlPower = 0.5;
+                grabberControlPower = 0.75;
             }
             if(gamepad2.left_stick_button){
                 //GrabPixel
-                grabberControlPower = -0.5;
+                grabberControlPower = -0.75;
             }
 
             grabberControl.setPower(grabberControlPower);
