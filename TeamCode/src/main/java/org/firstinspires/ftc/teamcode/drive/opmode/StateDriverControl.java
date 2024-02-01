@@ -26,6 +26,10 @@ public class StateDriverControl extends LinearOpMode {
 
     private CRServo grabberControl;
 
+    private DcMotor hangingLeft;
+    private DcMotor hangingRight;
+
+    //private Servo hangReleaseLeft, hangReleaseRight;
 
     //private TouchSensor touchSensor;
 
@@ -49,6 +53,9 @@ public class StateDriverControl extends LinearOpMode {
         retentionBarControl = hardwareMap.get(Servo.class, "retentionBarControl");
         grabberControl = hardwareMap.get(CRServo.class, "grabberControl");
 
+        hangingLeft = hardwareMap.get(DcMotor.class, "hangingLeft");
+        hangingRight = hardwareMap.get(DcMotor.class, "hangingRight");
+
 
         double frontLeftPower;
         double backLeftPower;
@@ -60,29 +67,8 @@ public class StateDriverControl extends LinearOpMode {
         int baseArmHeight = armControl.getCurrentPosition();
 
         //double check which motors are reversed, assumption is right-side
-        //backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        //frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        //frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-   /*
-   frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-   backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-   frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-   backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-   frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-   backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-   frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-   backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-   telemetry.addData("Starting at",  "%7d :%7d",
-           frontLeft.getCurrentPosition(),
-           backLeft.getCurrentPosition(),
-           frontRight.getCurrentPosition(),
-           backRight.getCurrentPosition());
-
-    */
 
 
         telemetry.addLine("Init Done");
@@ -121,12 +107,6 @@ public class StateDriverControl extends LinearOpMode {
             }
             double armPower = (up - down + manualControl);
             armControl.setPower(armPower*0.5);
-
-
-
-
-
-
 
 
 
@@ -171,21 +151,6 @@ public class StateDriverControl extends LinearOpMode {
             }
 
 
-            /*
-            if(gamepad2.dpad_up && grabberControl.getPosition() > 0.1){
-                grabberControlPosition += 0.1
-                grabberControl.setPosition(grabberControlPosition);
-            }
-            if(gamepad2.a && grabberControl.getPosition() != 0){
-                grabberControl.setPosition(0.1);
-            }
-            if(gamepad2.dpad_up && grabberControl.getPosition() <= 0.9){
-                grabberControlPosition += 0.01;
-            }
-            if(gamepad2.dpad_down && grabberControl.getPosition() >= 0.1){
-                grabberControlPosition -= 0.01;
-            }*/
-
             //Code openRetentionBar(boolean) using moveToPosition *ONLY ON RETENTION BAR MOTOR*
             if(gamepad2.left_bumper){
                 retentionBarPosition = 0.5;
@@ -197,17 +162,6 @@ public class StateDriverControl extends LinearOpMode {
 
 
             retentionBarControl.setPosition(retentionBarPosition);
-
-
-            /*if(gamepad2.right_bumper){
-                openRetentionBar(true);
-                //retentionBarPosition -= 70;
-            }
-            if(gamepad2.left_bumper){
-                openRetentionBar(false);
-                //retentionBarPosition += 70;
-            }*/
-
 
 
             double grabberControlPower = 0;
@@ -222,9 +176,16 @@ public class StateDriverControl extends LinearOpMode {
 
             grabberControl.setPower(grabberControlPower);
 
-            /*if (touchSensor.isPressed()) {
-                telemetry.addLine("Cone Aligned = True");
-            }*/
+
+            double hangingControlPower = 0;
+            if(gamepad1.y){
+                //Servo Release
+            }
+            hangingControlPower = gamepad1.left_trigger - gamepad1.right_trigger;
+
+            hangingLeft.setPower(-1*hangingControlPower);
+            hangingRight.setPower(hangingControlPower);
+
 
             //*0.5 to set more reasonable speed
             frontRight.setPower(frontRightPower*strength);
