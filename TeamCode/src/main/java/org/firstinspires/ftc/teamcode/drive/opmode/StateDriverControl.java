@@ -38,7 +38,7 @@ public class StateDriverControl extends LinearOpMode {
 
     private double retentionBarPosition;
 
-
+    private boolean hanging = false;
 
     @Override
     public void runOpMode() {
@@ -106,7 +106,9 @@ public class StateDriverControl extends LinearOpMode {
                 manualControl = 0.5;
             }
             double armPower = (up - down + manualControl);
-            armControl.setPower(armPower*0.5);
+            if(!hanging){
+                armControl.setPower(armPower*0.5);
+            }
 
 
 
@@ -176,15 +178,20 @@ public class StateDriverControl extends LinearOpMode {
 
             grabberControl.setPower(grabberControlPower);
 
-
-            double hangingControlPower = 0;
-            if(gamepad1.y){
-                //Servo Release
+            if(gamepad2.y){
+                hanging = true;
             }
-            hangingControlPower = gamepad1.left_trigger - gamepad1.right_trigger;
+            if(gamepad2.a){
+                hanging = false;
+            }
+            double hangingControlPower = 0;
+            hangingControlPower = gamepad2.left_trigger - gamepad2.right_trigger;
 
-            hangingLeft.setPower(-1*hangingControlPower);
-            hangingRight.setPower(hangingControlPower);
+            if(hanging){
+                hangingLeft.setPower(hangingControlPower);
+                hangingRight.setPower(hangingControlPower);
+            }
+
 
 
             //*0.5 to set more reasonable speed

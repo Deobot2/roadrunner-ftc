@@ -174,18 +174,7 @@ public class LeftRedAuto extends LinearOpMode {
                 .addDisplacementMarker(20, () -> retentionBarControl.setPosition(0.9))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
                 .forward(60)
-                .forward(19)// add arm lower in the future
-                .strafeRight(5)
-                .addDisplacementMarker(183, () -> {
-                    armControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
-                    //grabberControlLeft.setPosition(0.1);
-                    grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
-                    armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
-                })
+                .forward(20)// add arm lower in the future
                 .build();
 
         // Wait for the game to start (driver presses PLAY)
@@ -199,7 +188,7 @@ public class LeftRedAuto extends LinearOpMode {
             telemetry.update();
 
             //Controls how long the code waits before checking if the detection model has recognized something or not
-            long recogCheckWait = 8000;
+            long recogCheckWait = 5000;
             switch(stage){
                 case "detectionInit":
                     startTime = System.currentTimeMillis();
@@ -240,6 +229,15 @@ public class LeftRedAuto extends LinearOpMode {
                     coneLocation = 2;
                     retentionBarControl.setPosition(0.9);
                     drive.followTrajectorySequence(Middle);
+                    armControl.setPower(0.4);
+                    while (armControl.getCurrentPosition() < 1000) {}
+                    grabberControl.setPower(1.0);
+                    long startTime = System.currentTimeMillis();
+                    long waitTime = 1500;//milliseconds
+                    
+
+                    armControl.setPower(0.0);
+                    grabberControl.setPower(0.0);
                     requestOpModeStop();
                     stage = "putInfrontBoard";
                     break;
