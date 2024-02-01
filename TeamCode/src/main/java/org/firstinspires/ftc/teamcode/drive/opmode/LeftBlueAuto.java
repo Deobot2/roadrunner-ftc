@@ -32,7 +32,7 @@ public class LeftBlueAuto extends LinearOpMode {
     private static final boolean USE_WEBCAM = true;
     private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/light_blue_cone.tflite";
     private static final String[] LABELS = {
-            "Light Blue Cone ",
+            "Light Blue Cone",
     };
     //declare camera detection stuff
     private TfodProcessor tfod;
