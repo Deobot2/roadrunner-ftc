@@ -134,9 +134,9 @@ public class LeftBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(-180))
                 .strafeLeft(20.5)
                 .addDisplacementMarker(169, () -> {
-                    armControl.setPower(1.0);
+                    armControl.setPower(0.6);
                     while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
+                    armControl.setPower(-0.6);
                     //grabberControlLeft.setPosition(0.1);
                     grabberControl.setPower(1.0);
                     while (armControl.getCurrentPosition() > 200) {}
