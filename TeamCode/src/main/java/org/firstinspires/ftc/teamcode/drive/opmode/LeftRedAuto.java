@@ -232,10 +232,13 @@ public class LeftRedAuto extends LinearOpMode {
                     armControl.setPower(0.4);
                     while (armControl.getCurrentPosition() < 1000) {}
                     grabberControl.setPower(1.0);
-                    long startTime = System.currentTimeMillis();
-                    long waitTime = 1500;//milliseconds
-                    
-
+                    long releasePixelStart = System.currentTimeMillis();
+                    long releasePixelWaitTime = 1500;//milliseconds
+                    long curPixelTime = System.currentTimeMillis();
+                    while(curPixelTime-releasePixelStart < releasePixelWaitTime){}
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.4);
+                    while (armControl.getCurrentPosition() > 250){}
                     armControl.setPower(0.0);
                     grabberControl.setPower(0.0);
                     requestOpModeStop();
