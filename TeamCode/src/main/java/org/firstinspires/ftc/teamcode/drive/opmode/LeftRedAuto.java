@@ -40,10 +40,7 @@ public class LeftRedAuto extends LinearOpMode {
     private VisionPortal visionPortal;
 
     //declare motors
-    private DcMotor frontRight;
-    private DcMotor frontLeft;
-    private DcMotor backRight;
-    private DcMotor backLeft;
+    private DcMotor frontRight, frontLeft, backRight, backLeft;
     private DcMotor armControl;
     //declare end effectors
     private CRServo grabberControl;
@@ -56,24 +53,11 @@ public class LeftRedAuto extends LinearOpMode {
     //declare imu
     private IMU imu;
 
-    //save which cone position was detected so proper april tag can be done
-    private int coneLocation = -1;
-
     //For Switch Case
-    private String stage = "detectionInit";
-
-    private AprilTagDetection targetAprilTag;
+    private String stage = "detectionWait";
 
     //Used to end the auto
     private boolean doneWithAuto = false;
-
-    //Given 3inch diameter mechanum wheels, 5000 ticks goes ~91 in
-    //Therefore ~54.94505 ticks per inch
-    double TICKINCONVERSION = 54.94505;
-
-    double STRAFEINCONVERSION = 60.000;
-
-    double aprilTagStrafe = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -95,29 +79,12 @@ public class LeftRedAuto extends LinearOpMode {
 
         //init motors
         armControl = hardwareMap.get(DcMotor.class, "armControl");
-        /*
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        //Reversing right side so that runTo is positive
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        //Make sure motors are set up at default
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        */
+
         telemetry.addLine("Init Done");
 
         telemetry.update();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
-
 
         TrajectorySequence Right = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
@@ -132,16 +99,6 @@ public class LeftRedAuto extends LinearOpMode {
                 .forward(-77.5)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(20.5)
-                .addDisplacementMarker(169, () -> {
-                    armControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
-                    //grabberControlLeft.setPosition(0.1);
-                    grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
-                    armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
-                })
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
@@ -156,16 +113,6 @@ public class LeftRedAuto extends LinearOpMode {
                 .forward(-79)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(31.5)
-                .addDisplacementMarker(178, () -> {
-                    armControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
-                    //grabberControlLeft.setPosition(0.1);
-                    grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
-                    armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
-                })
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(32.5)
@@ -190,9 +137,6 @@ public class LeftRedAuto extends LinearOpMode {
             //Controls how long the code waits before checking if the detection model has recognized something or not
             long recogCheckWait = 5000;
             switch(stage){
-                case "detectionInit":
-                    stage = "detectionWait";
-                    break;
                 case "detectionWait":
                     safeWait(recogCheckWait);
                     stage = "detectionCheck";
@@ -223,7 +167,9 @@ public class LeftRedAuto extends LinearOpMode {
                     }
                     break;
                 case "middleSpike":
-                    coneLocation = 2;
+                    telemetry.addLine("We going middle");
+                    telemetry.update();
+
                     retentionBarControl.setPosition(0.9);
                     drive.followTrajectorySequence(Middle);
                     armControl.setPower(0.4);
@@ -234,21 +180,39 @@ public class LeftRedAuto extends LinearOpMode {
                     armControl.setPower(-0.4);
                     while (armControl.getCurrentPosition() > 250){}
                     armControl.setPower(0.0);
-                    requestOpModeStop();
+
                     stage = "parked";
                     break;
                 case "rightSpike":
-                    coneLocation = 3;
-                    drive.followTrajectorySequence(Right);
                     telemetry.addLine("We going right");
                     telemetry.update();
+
+                    drive.followTrajectorySequence(Right);
+                    armControl.setPower(0.4);
+                    while (armControl.getCurrentPosition() < 1000) {}
+                    grabberControl.setPower(1.0);
+                    safeWait(releasePixelWaitTime);
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.4);
+                    while (armControl.getCurrentPosition() > 250){}
+                    armControl.setPower(0.0);
+
                     stage = "parked";
                     break;
                 case "leftSpike":
-                    coneLocation = 1;
                     telemetry.addLine("We going left");
                     telemetry.update();
+
                     drive.followTrajectorySequence(Left);
+                    armControl.setPower(0.4);
+                    while (armControl.getCurrentPosition() < 1000) {}
+                    grabberControl.setPower(1.0);
+                    safeWait(releasePixelWaitTime);
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.4);
+                    while (armControl.getCurrentPosition() > 250){}
+                    armControl.setPower(0.0);
+
                     stage = "parked";
                     break;
                 case "parked":

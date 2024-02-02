@@ -15,19 +15,14 @@ import org.openftc.easyopencv.OpenCvCamera;
 public class StateDriverControl extends LinearOpMode {
 
     //initialize motors
-    private DcMotor frontRight;
-    private DcMotor frontLeft;
-    private DcMotor backRight;
-    private DcMotor backLeft;
-
+    private DcMotor frontRight, frontLeft, backRight, backLeft;
 
     private DcMotor armControl;
     private Servo retentionBarControl;
 
     private CRServo grabberControl;
 
-    private DcMotor hangingLeft;
-    private DcMotor hangingRight;
+    private DcMotor hangingLeft, hangingRight;
 
     //private Servo hangReleaseLeft, hangReleaseRight;
 
