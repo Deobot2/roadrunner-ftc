@@ -239,54 +239,20 @@ public class LeftRedAuto extends LinearOpMode {
                     armControl.setPower(0.0);
                     grabberControl.setPower(0.0);
                     requestOpModeStop();
-                    stage = "putInfrontBoard";
+                    stage = "parked";
                     break;
                 case "rightSpike":
                     coneLocation = 3;
                     drive.followTrajectorySequence(Right);
                     telemetry.addLine("We going right");
                     telemetry.update();
-                    stage = "aprilTagInit";
+                    stage = "parked";
                     break;
                 case "leftSpike":
                     coneLocation = 1;
                     telemetry.addLine("We going left");
                     telemetry.update();
                     drive.followTrajectorySequence(Left);
-                    stage = "aprilTagInit";
-                    break;
-                case "putInfrontBoard":
-                    requestOpModeStop();
-                    stage = "aprilTagInit";
-                    break;
-                case "aprilTagInit":
-                    initAprilTag();
-                    stage = "placeOnBoard";
-                    break;
-                case "placeOnBoard":
-                    requestOpModeStop();
-                    //Write code to place pixel on board
-                    //need a variable cameraOffset which represents the offset of the camera from the grabber
-                    List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-                    telemetry.addData("# of AprilTags Detected", currentDetections.size());
-                    for(AprilTagDetection detection : currentDetections) {
-                        if(detection.id == coneLocation){
-                            targetAprilTag = detection;
-                        }
-                    }
-                    if(targetAprilTag != null){
-                        setStrafeTo(targetAprilTag.ftcPose.x);
-                    }else{
-                        //since we can't tell the x offset without metadata, we are just going to skip this
-                    }
-                    //Raise the arm to the right height
-                    //Distance to bring the arm to the backboard
-                    setRunTo(16.0);
-                    stage = "park";
-                    break;
-                case "park":
-                    //Write code to park the robot
-                    //I don't think this will be needed since we will already be inside the park zone when we place the pixel
                     stage = "parked";
                     break;
                 case "parked":
@@ -295,9 +261,7 @@ public class LeftRedAuto extends LinearOpMode {
                     frontLeft.setPower(0);
                     backRight.setPower(0);
                     backLeft.setPower(0);
-                    //Check if this code works
-                    //this should forever just loop
-                    stage = "done";
+                    requestOpModeStop();
                     break;
                 case "done":
                     doneWithAuto = true;
