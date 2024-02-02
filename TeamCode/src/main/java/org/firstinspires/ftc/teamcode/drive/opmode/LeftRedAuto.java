@@ -240,7 +240,7 @@ public class LeftRedAuto extends LinearOpMode {
                     armControl.setPower(-0.4);
                     while (armControl.getCurrentPosition() > 250){}
                     armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
+
                     requestOpModeStop();
                     stage = "parked";
                     break;
@@ -264,6 +264,8 @@ public class LeftRedAuto extends LinearOpMode {
                     frontLeft.setPower(0);
                     backRight.setPower(0);
                     backLeft.setPower(0);
+
+                    armControl.setPower(0);
                     requestOpModeStop();
                     break;
                 case "done":
