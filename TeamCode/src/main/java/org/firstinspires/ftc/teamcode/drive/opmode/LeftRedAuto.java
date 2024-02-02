@@ -48,6 +48,8 @@ public class LeftRedAuto extends LinearOpMode {
     //declare end effectors
     private CRServo grabberControl;
 
+    private long releasePixelWaitTime = 1500;//milliseconds
+
     //declare retention bar
     private Servo retentionBarControl;
 
@@ -59,8 +61,6 @@ public class LeftRedAuto extends LinearOpMode {
 
     //For Switch Case
     private String stage = "detectionInit";
-
-    private long startTime;
 
     private AprilTagDetection targetAprilTag;
 
@@ -191,14 +191,11 @@ public class LeftRedAuto extends LinearOpMode {
             long recogCheckWait = 5000;
             switch(stage){
                 case "detectionInit":
-                    startTime = System.currentTimeMillis();
                     stage = "detectionWait";
                     break;
                 case "detectionWait":
-                    long curTime = System.currentTimeMillis();
-                    if(curTime - startTime > recogCheckWait){
-                        stage = "detectionCheck";
-                    }
+                    safeWait(recogCheckWait);
+                    stage = "detectionCheck";
                     break;
                 case "detectionCheck":
                     List<Recognition> curRecogs = tfod.getRecognitions();
@@ -232,15 +229,11 @@ public class LeftRedAuto extends LinearOpMode {
                     armControl.setPower(0.4);
                     while (armControl.getCurrentPosition() < 1000) {}
                     grabberControl.setPower(1.0);
-                    long releasePixelStart = System.currentTimeMillis();
-                    long releasePixelWaitTime = 1500;//milliseconds
-                    long curPixelTime = System.currentTimeMillis();
-                    while(curPixelTime-releasePixelStart < releasePixelWaitTime){}
+                    safeWait(releasePixelWaitTime);
                     grabberControl.setPower(0);
                     armControl.setPower(-0.4);
                     while (armControl.getCurrentPosition() > 250){}
                     armControl.setPower(0.0);
-
                     requestOpModeStop();
                     stage = "parked";
                     break;
@@ -285,6 +278,12 @@ public class LeftRedAuto extends LinearOpMode {
         visionPortal.close();
     }
 
+    //waitTime is in Milliseconds
+    private void safeWait(long waitTime){
+        long startTime = System.currentTimeMillis();
+        long curTime = System.currentTimeMillis();
+        while(curTime - startTime < waitTime){}
+    }
     private void resetWithoutEncoder(){
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
