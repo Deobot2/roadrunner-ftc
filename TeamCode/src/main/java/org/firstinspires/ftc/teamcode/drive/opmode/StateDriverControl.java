@@ -30,7 +30,7 @@ public class StateDriverControl extends LinearOpMode {
     //init sensors/camera
     OpenCvCamera camera;
 
-    private double retentionBarPosition;
+    private double retentionBarStartingPosition;
 
     private boolean hanging = false;
 
@@ -56,7 +56,7 @@ public class StateDriverControl extends LinearOpMode {
         double frontRightPower;
         double backRightPower;
 
-        retentionBarPosition = retentionBarControl.getPosition();
+        retentionBarStartingPosition = retentionBarControl.getPosition();
 
         int baseArmHeight = armControl.getCurrentPosition();
 
@@ -149,15 +149,12 @@ public class StateDriverControl extends LinearOpMode {
 
             //Code openRetentionBar(boolean) using moveToPosition *ONLY ON RETENTION BAR MOTOR*
             if(gamepad2.left_bumper){
-                retentionBarPosition = 0.5;
+                retentionBarControl.setPosition(retentionBarStartingPosition);
             }
             if(gamepad2.right_bumper){
                 //openRetentionBar(false);
-                retentionBarPosition = 0.9;
-            }
-
-
-            retentionBarControl.setPosition(retentionBarPosition);
+                retentionBarControl.setPosition(retentionBarStartingPosition + 0.4);
+            }9
 
 
             double grabberControlPower = 0;
