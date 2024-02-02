@@ -31,9 +31,7 @@ public class LeftRedAuto extends LinearOpMode {
     //Set up object detection
     private static final boolean USE_WEBCAM = true;
     private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/red_cone_FPNLite.tflite";
-    private static final String[] LABELS = {
-            "Red Cone",
-    };
+    private static final String[] LABELS = {"Red Cone"};
     //declare camera detection stuff
     private TfodProcessor tfod;
     private AprilTagProcessor aprilTag;
@@ -42,7 +40,7 @@ public class LeftRedAuto extends LinearOpMode {
     //declare motors
     private DcMotor frontRight, frontLeft, backRight, backLeft;
     private DcMotor armControl;
-    //declare end effectors
+    //declare end effector
     private CRServo grabberControl;
 
     private long releasePixelWaitTime = 1500;//milliseconds
@@ -121,7 +119,7 @@ public class LeftRedAuto extends LinearOpMode {
                 .addDisplacementMarker(20, () -> retentionBarControl.setPosition(0.9))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
                 .forward(60)
-                .forward(20)// add arm lower in the future
+                .forward(19.5)// add arm lower in the future
                 .build();
 
         // Wait for the game to start (driver presses PLAY)
@@ -286,7 +284,7 @@ public class LeftRedAuto extends LinearOpMode {
 
                 // The following default settings are available to un-comment and edit as needed to
                 // set parameters for custom models.
-                //.setModelLabels(LABELS)
+                .setModelLabels(LABELS)
                 //.setIsModelTensorFlow2(true)
                 //.setIsModelQuantized(true)
                 //.setModelInputSize(300)

@@ -26,7 +26,6 @@ public class StateDriverControl extends LinearOpMode {
 
     //private Servo hangReleaseLeft, hangReleaseRight;
 
-    //private TouchSensor touchSensor;
 
     //init sensors/camera
     OpenCvCamera camera;
