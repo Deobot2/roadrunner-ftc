@@ -133,16 +133,6 @@ public class LeftBlueAuto extends LinearOpMode {
                 .forward(-77.5 + 48.0)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(20.5)
-                .addDisplacementMarker(169, () -> {
-                    armControl.setPower(0.6);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-0.6);
-                    //grabberControlLeft.setPosition(0.1);
-                    grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
-                    armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
-                })
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
@@ -157,16 +147,6 @@ public class LeftBlueAuto extends LinearOpMode {
                 .forward(-79 + 48.0)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(31.5)
-                .addDisplacementMarker(178, () -> {
-                    armControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
-                    //grabberControlLeft.setPosition(0.1);
-                    grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
-                    armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
-                })
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(32.5)
@@ -176,17 +156,6 @@ public class LeftBlueAuto extends LinearOpMode {
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
                 .forward(60 - 48.0)
                 .forward(19)// add arm lower in the future
-                .strafeRight(5)
-                .addDisplacementMarker(183, () -> {
-                    armControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
-                    //grabberControlLeft.setPosition(0.1);
-                    grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
-                    armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
-                })
                 .build();
 
         // Wait for the game to start (driver presses PLAY)
@@ -241,7 +210,14 @@ public class LeftBlueAuto extends LinearOpMode {
                     coneLocation = 2;
                     retentionBarControl.setPosition(0.9);
                     drive.followTrajectorySequence(Middle);
-                    requestOpModeStop();
+                    armControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() < 1500) {}
+                    armControl.setPower(-1.0);
+                    //grabberControlLeft.setPosition(0.1);
+                    grabberControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() > 200) {}
+                    armControl.setPower(0.0);
+                    grabberControl.setPower(0.0);
                     stage = "parked";
                     break;
                 case "rightSpike":
@@ -249,6 +225,14 @@ public class LeftBlueAuto extends LinearOpMode {
                     drive.followTrajectorySequence(Right);
                     telemetry.addLine("We going right");
                     telemetry.update();
+                    armControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() < 1500) {}
+                    armControl.setPower(-1.0);
+                    //grabberControlLeft.setPosition(0.1);
+                    grabberControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() > 200) {}
+                    armControl.setPower(0.0);
+                    grabberControl.setPower(0.0);
                     stage = "parked";
                     break;
                 case "leftSpike":
@@ -256,6 +240,14 @@ public class LeftBlueAuto extends LinearOpMode {
                     telemetry.addLine("We going left");
                     telemetry.update();
                     drive.followTrajectorySequence(Left);
+                    armControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() < 1500) {}
+                    armControl.setPower(-1.0);
+                    //grabberControlLeft.setPosition(0.1);
+                    grabberControl.setPower(1.0);
+                    while (armControl.getCurrentPosition() > 200) {}
+                    armControl.setPower(0.0);
+                    grabberControl.setPower(0.0);
                     stage = "parked";
                     break;
                 case "parked":
