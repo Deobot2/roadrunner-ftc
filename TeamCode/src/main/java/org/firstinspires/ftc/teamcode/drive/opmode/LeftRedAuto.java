@@ -43,10 +43,13 @@ public class LeftRedAuto extends LinearOpMode {
     //declare end effector
     private CRServo grabberControl;
 
-    private long releasePixelWaitTime = 1500;//milliseconds
+    private long releasePixelWaitTime = 1000;//milliseconds
 
     //declare retention bar
     private Servo retentionBarControl;
+    //retentionBarBasePosition
+    private double rBBasePosition;
+
 
     //declare imu
     private IMU imu;
@@ -78,6 +81,12 @@ public class LeftRedAuto extends LinearOpMode {
         //init motors
         armControl = hardwareMap.get(DcMotor.class, "armControl");
 
+        //Motor initialization needed for setting the power to 0 at the end
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+
         telemetry.addLine("Init Done");
 
         telemetry.update();
@@ -87,8 +96,8 @@ public class LeftRedAuto extends LinearOpMode {
         TrajectorySequence Right = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(-90))
-                .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
-                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(7.75)
                 .forward(-8.3)
                 .turn(Math.toRadians(90))
@@ -101,8 +110,8 @@ public class LeftRedAuto extends LinearOpMode {
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(90))
-                .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
-                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(7.75)
                 .forward(-8.3)
                 .turn(Math.toRadians(-90))
@@ -116,10 +125,10 @@ public class LeftRedAuto extends LinearOpMode {
                 .forward(32.5)
                 .forward(-9.3)
                 .turn(Math.toRadians(-90))
-                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(0.9))
-                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(60)
-                .forward(19.5)// add arm lower in the future
+                .forward(19.75)// add arm lower in the future
                 .build();
 
         // Wait for the game to start (driver presses PLAY)
@@ -131,6 +140,8 @@ public class LeftRedAuto extends LinearOpMode {
 
             telemetry.addData("Stage",stage);
             telemetry.update();
+
+            rBBasePosition = retentionBarControl.getPosition();
 
             //Controls how long the code waits before checking if the detection model has recognized something or not
             long recogCheckWait = 5000;
@@ -168,15 +179,16 @@ public class LeftRedAuto extends LinearOpMode {
                     telemetry.addLine("We going middle");
                     telemetry.update();
 
-                    retentionBarControl.setPosition(0.9);
+                    retentionBarControl.setPosition(rBBasePosition+0.4);
                     drive.followTrajectorySequence(Middle);
-                    armControl.setPower(0.4);
-                    while (armControl.getCurrentPosition() < 1000) {}
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 900) {}
+                    armControl.setPower(0);
                     grabberControl.setPower(1.0);
                     safeWait(releasePixelWaitTime);
                     grabberControl.setPower(0);
-                    armControl.setPower(-0.4);
-                    while (armControl.getCurrentPosition() > 250){}
+                    armControl.setPower(-0.6);
+                    while (armControl.getCurrentPosition() > 125){}
                     armControl.setPower(0.0);
 
                     stage = "parked";
@@ -187,12 +199,13 @@ public class LeftRedAuto extends LinearOpMode {
 
                     drive.followTrajectorySequence(Right);
                     armControl.setPower(0.4);
-                    while (armControl.getCurrentPosition() < 1000) {}
+                    while (armControl.getCurrentPosition() < 900) {}
+                    armControl.setPower(0);
                     grabberControl.setPower(1.0);
                     safeWait(releasePixelWaitTime);
                     grabberControl.setPower(0);
                     armControl.setPower(-0.4);
-                    while (armControl.getCurrentPosition() > 250){}
+                    while (armControl.getCurrentPosition() > 125){}
                     armControl.setPower(0.0);
 
                     stage = "parked";
@@ -203,12 +216,13 @@ public class LeftRedAuto extends LinearOpMode {
 
                     drive.followTrajectorySequence(Left);
                     armControl.setPower(0.4);
-                    while (armControl.getCurrentPosition() < 1000) {}
+                    while (armControl.getCurrentPosition() < 900) {}
+                    armControl.setPower(0);
                     grabberControl.setPower(1.0);
                     safeWait(releasePixelWaitTime);
                     grabberControl.setPower(0);
                     armControl.setPower(-0.4);
-                    while (armControl.getCurrentPosition() > 250){}
+                    while (armControl.getCurrentPosition() > 125){}
                     armControl.setPower(0.0);
 
                     stage = "parked";
@@ -244,7 +258,10 @@ public class LeftRedAuto extends LinearOpMode {
     private void safeWait(long waitTime){
         long startTime = System.currentTimeMillis();
         long curTime = System.currentTimeMillis();
-        while(curTime - startTime < waitTime){}
+        while(curTime - startTime < waitTime){
+            curTime = System.currentTimeMillis();
+        }
+
     }
     private void resetWithoutEncoder(){
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

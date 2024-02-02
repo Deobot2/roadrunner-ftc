@@ -248,7 +248,9 @@ public class RightBlueAuto extends LinearOpMode {
     private void safeWait(long waitTime){
         long startTime = System.currentTimeMillis();
         long curTime = System.currentTimeMillis();
-        while(curTime - startTime < waitTime){}
+        while(curTime - startTime < waitTime){
+            curTime = System.currentTimeMillis();
+        }
     }
     //Updates the orientation of the robot for the IMU
     private void updateOrientation() {
