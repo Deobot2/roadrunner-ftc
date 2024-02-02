@@ -65,7 +65,7 @@ public class LeftBlueAuto extends LinearOpMode {
     private AprilTagDetection targetAprilTag;
 
     //Used to end the auto
-    private boolean doneWithAuto = false;
+    private final boolean doneWithAuto = false;
 
     //Given 3inch diameter mechanum wheels, 5000 ticks goes ~91 in
     //Therefore ~54.94505 ticks per inch
@@ -242,55 +242,20 @@ public class LeftBlueAuto extends LinearOpMode {
                     retentionBarControl.setPosition(0.9);
                     drive.followTrajectorySequence(Middle);
                     requestOpModeStop();
-                    stage = "putInfrontBoard";
+                    stage = "parked";
                     break;
                 case "rightSpike":
                     coneLocation = 3;
                     drive.followTrajectorySequence(Right);
                     telemetry.addLine("We going right");
                     telemetry.update();
-                    stage = "aprilTagInit";
+                    stage = "parked";
                     break;
                 case "leftSpike":
                     coneLocation = 1;
                     telemetry.addLine("We going left");
                     telemetry.update();
                     drive.followTrajectorySequence(Left);
-                    stage = "aprilTagInit";
-                    break;
-                case "putInfrontBoard":
-                    requestOpModeStop();
-                    stage = "aprilTagInit";
-                    break;
-                case "aprilTagInit":
-                    initAprilTag();
-                    stage = "placeOnBoard";
-                    break;
-                case "placeOnBoard":
-                    requestOpModeStop();
-                    //Write code to place pixel on board
-                    //need a variable cameraOffset which represents the offset of the camera from the grabber
-                    List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-                    telemetry.addData("# of AprilTags Detected", currentDetections.size());
-                    for(AprilTagDetection detection : currentDetections) {
-                        if(detection.id == coneLocation){
-                            targetAprilTag = detection;
-                        }
-                    }
-                    if(targetAprilTag != null){
-                        setStrafeTo(targetAprilTag.ftcPose.x);
-                    }else{
-                        //since we can't tell the x offset without metadata, we are just going to skip this
-                    }
-                    //Raise the arm to the right height
-                    //Distance to bring the arm to the backboard
-                    setRunTo(16.0);
-                    //grabberControlLeft.setPosition(0.45);
-                    stage = "park";
-                    break;
-                case "park":
-                    //Write code to park the robot
-                    //I don't think this will be needed since we will already be inside the park zone when we place the pixel
                     stage = "parked";
                     break;
                 case "parked":
@@ -299,12 +264,9 @@ public class LeftBlueAuto extends LinearOpMode {
                     frontLeft.setPower(0);
                     backRight.setPower(0);
                     backLeft.setPower(0);
+                    requestOpModeStop();
                     //Check if this code works
                     //this should forever just loop
-                    stage = "done";
-                    break;
-                case "done":
-                    doneWithAuto = true;
                     break;
                 default:
                     telemetry.addLine("Something went wrong");
@@ -333,99 +295,6 @@ public class LeftBlueAuto extends LinearOpMode {
     }
     //Check the scope that this function should be at
     //Power should be between 0.0 and 1.0
-    private void setRunTo(double distance){
-
-        int runTo = (int)(distance * TICKINCONVERSION);
-
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //This is a default value, can be changed as seen fit
-        double power = 1.0;
-
-        frontRight.setTargetPosition(runTo);
-        frontLeft.setTargetPosition(runTo);
-        backRight.setTargetPosition(runTo);
-        backLeft.setTargetPosition(runTo);
-
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        frontRight.setPower(power);
-        frontLeft.setPower(power);
-        backRight.setPower(power);
-        backLeft.setPower(power);
-
-        telemetry.addData("Power Input", power);
-        telemetry.update();
-
-        while (frontRight.isBusy()){}
-    }
-    private void setRotateTo(double desiredRotation){
-
-        resetWithoutEncoder();
-        //I changed this since before, if desiredRotation was 90, then the robot would simply turn until its orientation was 90 instead of turning until its orientation was ADDITIONAL 90.
-        double originalAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-        //It seems like it needed to be spinning the other way which is why the -1 is there
-        double desiredAngle = (originalAngle + (-1*desiredRotation));
-        int rotationFactor = 1;
-
-        while(rotationFactor != 0) {
-            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-            double power = 0.5;
-            double yawOrientation = orientation.getYaw(AngleUnit.DEGREES);
-
-            telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
-            telemetry.update();
-
-            if(yawOrientation < (desiredAngle - 1)){
-                rotationFactor = 1;
-            }else if (yawOrientation > (desiredAngle + 1)){
-                rotationFactor = -1;
-            } else if ((yawOrientation < (desiredAngle + 1)) && (yawOrientation > (desiredAngle - 1))) {
-                rotationFactor = 0;
-            }
-            frontRight.setPower(power * rotationFactor);
-            frontLeft.setPower(-power * rotationFactor);
-            backRight.setPower(power * rotationFactor);
-            backLeft.setPower(-power * rotationFactor);
-        }
-
-    }
-    private void setStrafeTo(double distance){
-        int runTo = (int)(distance * STRAFEINCONVERSION);
-
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //low because strafing is rough/inaccurate at fast speeds
-        double power = 0.4;
-
-        //frontRight & backLeft are negative because strafing causes them to be
-        //positive runTo means right strafe
-        frontRight.setTargetPosition(-runTo);
-        frontLeft.setTargetPosition(runTo);
-        backRight.setTargetPosition(runTo);
-        backLeft.setTargetPosition(-runTo);
-
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        frontRight.setPower(power);
-        frontLeft.setPower(power);
-        backRight.setPower(power);
-        backLeft.setPower(power);
-
-        while(frontRight.isBusy()){}
-    }
     //Updates the orientation of the robot for the IMU
     private void updateOrientation() {
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
