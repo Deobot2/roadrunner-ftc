@@ -31,50 +31,33 @@ public class RightRedAuto extends LinearOpMode {
     //Set up object detection
     private static final boolean USE_WEBCAM = true;
     private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/red_cone_FPNLite.tflite";
-    private static final String[] LABELS = {
-            "Red Cone",
-    };
+    private static final String[] LABELS = {"Red Cone"};
     //declare camera detection stuff
     private TfodProcessor tfod;
-    private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
 
     //declare motors
-    private DcMotor frontRight;
-    private DcMotor frontLeft;
-    private DcMotor backRight;
-    private DcMotor backLeft;
+    private DcMotor frontRight, frontLeft, backRight, backLeft;
     private DcMotor armControl;
-
-    //declare end effectors
+    //declare end effector
     private CRServo grabberControl;
+
+    private long releasePixelWaitTime = 1000;//milliseconds
 
     //declare retention bar
     private Servo retentionBarControl;
+    //retentionBarBasePosition
+    private double rBBasePosition;
+
 
     //declare imu
     private IMU imu;
 
-    //save which cone position was detected so proper april tag can be done
-    private int coneLocation = -1;
-
     //For Switch Case
-    private String stage = "detectionInit";
-
-    private long startTime;
-
-    private AprilTagDetection targetAprilTag;
+    private String stage = "detectionWait";
 
     //Used to end the auto
     private boolean doneWithAuto = false;
-
-    //Given 3inch diameter mechanum wheels, 5000 ticks goes ~91 in
-    //Therefore ~54.94505 ticks per inch
-    double TICKINCONVERSION = 54.94505;
-
-    double STRAFEINCONVERSION = 60.000;
-
-    double aprilTagStrafe = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -96,97 +79,54 @@ public class RightRedAuto extends LinearOpMode {
 
         //init motors
         armControl = hardwareMap.get(DcMotor.class, "armControl");
-        /*
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+
+        //Motor initialization needed for setting the power to 0 at the end
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        //Reversing right side so that runTo is positive
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        //Make sure motors are set up at default
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        */
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+
         telemetry.addLine("Init Done");
 
         telemetry.update();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-
-
         TrajectorySequence Right = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(-90))
-                .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
-                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(7.75)
                 .forward(-8.3)
                 .turn(Math.toRadians(90))
                 .forward(23.5)
                 .turn(Math.toRadians(90))
-                .forward(-77.5 + 48.0)
+                .forward(-78.75+48.0)
                 .turn(Math.toRadians(-180))
-                .strafeLeft(20.5)
-                .addDisplacementMarker(169, () -> {
-                    armControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
-                    //grabberControl.setPosition(0.1);
-                    grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
-                    armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
-                })
+                .strafeRight(31.5)
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(90))
-                .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
-                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
-                .forward(7.75)
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
+                .forward(6)
                 .forward(-8.3)
                 .turn(Math.toRadians(-90))
                 .forward(23.5)
                 .turn(Math.toRadians(90))
-                .forward(-79 + 48.0)
+                .forward(-78.25+48.0)
                 .turn(Math.toRadians(-180))
-                .strafeLeft(31.5)
-                .addDisplacementMarker(178, () -> {
-                    armControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
-                    //grabberControl.setPosition(0.1);
-                    grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
-                    armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
-                })
+                .strafeRight(20.5)
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(32.5)
                 .forward(-9.3)
                 .turn(Math.toRadians(-90))
-                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(0.9))
-                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
-                .forward(60 - 48.0)
-                .forward(19)// add arm lower in the future
-                .strafeRight(5)
-                .addDisplacementMarker(183, () -> {
-                    armControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
-                    //grabberControl.setPosition(0.1);
-                    grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
-                    armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
-                })
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
+                .forward(79.75-48.0)
                 .build();
 
         // Wait for the game to start (driver presses PLAY)
@@ -199,18 +139,16 @@ public class RightRedAuto extends LinearOpMode {
             telemetry.addData("Stage",stage);
             telemetry.update();
 
+            rBBasePosition = retentionBarControl.getPosition();
+
+            telemetry.addData("rBBasePosition",rBBasePosition);
+
             //Controls how long the code waits before checking if the detection model has recognized something or not
-            long recogCheckWait = 8000;
+            long recogCheckWait = 5000;
             switch(stage){
-                case "detectionInit":
-                    startTime = System.currentTimeMillis();
-                    stage = "detectionWait";
-                    break;
                 case "detectionWait":
-                    long curTime = System.currentTimeMillis();
-                    if(curTime - startTime > recogCheckWait){
-                        stage = "detectionCheck";
-                    }
+                    safeWait(recogCheckWait);
+                    stage = "detectionCheck";
                     break;
                 case "detectionCheck":
                     List<Recognition> curRecogs = tfod.getRecognitions();
@@ -238,58 +176,56 @@ public class RightRedAuto extends LinearOpMode {
                     }
                     break;
                 case "middleSpike":
-                    coneLocation = 2;
-                    retentionBarControl.setPosition(0.9);
+                    telemetry.addLine("We going middle");
+                    telemetry.update();
+
+                    retentionBarControl.setPosition(rBBasePosition+0.4);
                     drive.followTrajectorySequence(Middle);
-                    requestOpModeStop();
-                    stage = "putInfrontBoard";
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 1100) {}
+                    armControl.setPower(0);
+                    grabberControl.setPower(1.0);
+                    safeWait(releasePixelWaitTime);
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.6);
+                    while (armControl.getCurrentPosition() > 125){}
+                    armControl.setPower(0.0);
+
+                    stage = "parked";
                     break;
                 case "rightSpike":
-                    coneLocation = 3;
-                    drive.followTrajectorySequence(Right);
                     telemetry.addLine("We going right");
                     telemetry.update();
-                    stage = "aprilTagInit";
+
+                    drive.followTrajectorySequence(Right);
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 1100) {}
+                    armControl.setPower(0);
+                    grabberControl.setPower(1.0);
+                    safeWait(releasePixelWaitTime);
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.6);
+                    while (armControl.getCurrentPosition() > 125){}
+                    armControl.setPower(0.0);
+
+                    stage = "parked";
                     break;
                 case "leftSpike":
-                    coneLocation = 1;
                     telemetry.addLine("We going left");
                     telemetry.update();
+
                     drive.followTrajectorySequence(Left);
-                    stage = "aprilTagInit";
-                    break;
-                case "putInfrontBoard":
-                    requestOpModeStop();
-                    stage = "aprilTagInit";
-                    break;
-                case "aprilTagInit":
-                    initAprilTag();
-                    stage = "placeOnBoard";
-                    break;
-                case "placeOnBoard":
-                    requestOpModeStop();
-                    //Write code to place pixel on board
-                    //need a variable cameraOffset which represents the offset of the camera from the grabber
-                    List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-                    telemetry.addData("# of AprilTags Detected", currentDetections.size());
-                    for(AprilTagDetection detection : currentDetections) {
-                        if(detection.id == coneLocation){
-                            targetAprilTag = detection;
-                        }
-                    }
-                    if(targetAprilTag != null){
-                        setStrafeTo(targetAprilTag.ftcPose.x);
-                    }else{
-                        //since we can't tell the x offset without metadata, we are just going to skip this
-                    }
-                    //Raise the arm to the right height
-                    //Distance to bring the arm to the backboard
-                    setRunTo(16.0);
-                    stage = "park";
-                    break;
-                case "park":
-                    //Write code to park the robot
-                    //I don't think this will be needed since we will already be inside the park zone when we place the pixel
+                    telemetry.addLine("Should be raising Arm");
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 1100) {}
+                    armControl.setPower(0);
+                    grabberControl.setPower(1.0);
+                    safeWait(releasePixelWaitTime);
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.6);
+                    while (armControl.getCurrentPosition() > 125){}
+                    armControl.setPower(0.0);
+
                     stage = "parked";
                     break;
                 case "parked":
@@ -298,9 +234,9 @@ public class RightRedAuto extends LinearOpMode {
                     frontLeft.setPower(0);
                     backRight.setPower(0);
                     backLeft.setPower(0);
-                    //Check if this code works
-                    //this should forever just loop
-                    stage = "done";
+
+                    armControl.setPower(0);
+                    requestOpModeStop();
                     break;
                 case "done":
                     doneWithAuto = true;
@@ -319,6 +255,15 @@ public class RightRedAuto extends LinearOpMode {
         visionPortal.close();
     }
 
+    //waitTime is in Milliseconds
+    private void safeWait(long waitTime){
+        long startTime = System.currentTimeMillis();
+        long curTime = System.currentTimeMillis();
+        while(curTime - startTime < waitTime){
+            curTime = System.currentTimeMillis();
+        }
+
+    }
     private void resetWithoutEncoder(){
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -332,99 +277,6 @@ public class RightRedAuto extends LinearOpMode {
     }
     //Check the scope that this function should be at
     //Power should be between 0.0 and 1.0
-    private void setRunTo(double distance){
-
-        int runTo = (int)(distance * TICKINCONVERSION);
-
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //This is a default value, can be changed as seen fit
-        double power = 1.0;
-
-        frontRight.setTargetPosition(runTo);
-        frontLeft.setTargetPosition(runTo);
-        backRight.setTargetPosition(runTo);
-        backLeft.setTargetPosition(runTo);
-
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        frontRight.setPower(power);
-        frontLeft.setPower(power);
-        backRight.setPower(power);
-        backLeft.setPower(power);
-
-        telemetry.addData("Power Input", power);
-        telemetry.update();
-
-        while (frontRight.isBusy()){}
-    }
-    private void setRotateTo(double desiredRotation){
-
-        resetWithoutEncoder();
-        //I changed this since before, if desiredRotation was 90, then the robot would simply turn until its orientation was 90 instead of turning until its orientation was ADDITIONAL 90.
-        double originalAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-        //It seems like it needed to be spinning the other way which is why the -1 is there
-        double desiredAngle = (originalAngle + (-1*desiredRotation));
-        int rotationFactor = 1;
-
-        while(rotationFactor != 0) {
-            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-            double power = 0.5;
-            double yawOrientation = orientation.getYaw(AngleUnit.DEGREES);
-
-            telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
-            telemetry.update();
-
-            if(yawOrientation < (desiredAngle - 1)){
-                rotationFactor = 1;
-            }else if (yawOrientation > (desiredAngle + 1)){
-                rotationFactor = -1;
-            } else if ((yawOrientation < (desiredAngle + 1)) && (yawOrientation > (desiredAngle - 1))) {
-                rotationFactor = 0;
-            }
-            frontRight.setPower(power * rotationFactor);
-            frontLeft.setPower(-power * rotationFactor);
-            backRight.setPower(power * rotationFactor);
-            backLeft.setPower(-power * rotationFactor);
-        }
-
-    }
-    private void setStrafeTo(double distance){
-        int runTo = (int)(distance * STRAFEINCONVERSION);
-
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //low because strafing is rough/inaccurate at fast speeds
-        double power = 0.4;
-
-        //frontRight & backLeft are negative because strafing causes them to be
-        //positive runTo means right strafe
-        frontRight.setTargetPosition(-runTo);
-        frontLeft.setTargetPosition(runTo);
-        backRight.setTargetPosition(runTo);
-        backLeft.setTargetPosition(-runTo);
-
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        frontRight.setPower(power);
-        frontLeft.setPower(power);
-        backRight.setPower(power);
-        backLeft.setPower(power);
-
-        while(frontRight.isBusy()){}
-    }
     //Updates the orientation of the robot for the IMU
     private void updateOrientation() {
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -450,7 +302,7 @@ public class RightRedAuto extends LinearOpMode {
 
                 // The following default settings are available to un-comment and edit as needed to
                 // set parameters for custom models.
-                //.setModelLabels(LABELS)
+                .setModelLabels(LABELS)
                 //.setIsModelTensorFlow2(true)
                 //.setIsModelQuantized(true)
                 //.setModelInputSize(300)
@@ -515,49 +367,4 @@ public class RightRedAuto extends LinearOpMode {
         }   // end for() loop
 
     }   // end method telemetryTfod()
-
-
-    //Initialize the AprilTag processor
-    private void initAprilTag() {
-
-        // Create the AprilTag processor the easy way.
-        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
-
-        // Create the vision portal the easy way.
-        if (USE_WEBCAM) {
-            visionPortal = VisionPortal.easyCreateWithDefaults(
-                    hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
-        } else {
-            visionPortal = VisionPortal.easyCreateWithDefaults(
-                    BuiltinCameraDirection.BACK, aprilTag);
-        }
-
-    }   // end method initAprilTag()
-
-    //Add telemetry about AprilTag detections
-    @SuppressLint("DefaultLocale")
-    private void telemetryAprilTag() {
-
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
-
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
-            }
-        }   // end for() loop
-
-        // Add "key" information to telemetry
-        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
-        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-        telemetry.addLine("RBE = Range, Bearing & Elevation");
-
-    }   // end method telemetryAprilTag()
 }

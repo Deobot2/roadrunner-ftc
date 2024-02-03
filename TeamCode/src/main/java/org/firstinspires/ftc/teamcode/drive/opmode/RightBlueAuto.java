@@ -44,6 +44,8 @@ public class RightBlueAuto extends LinearOpMode {
     //declare end effector
     private CRServo grabberControl;
 
+    private long releasePixelWaitTime = 1000;//milliseconds
+
     //declare retention bar
     private Servo retentionBarControl;
 
@@ -81,6 +83,12 @@ public class RightBlueAuto extends LinearOpMode {
 
         //init motors
         armControl = hardwareMap.get(DcMotor.class, "armControl");
+
+        //Motor initialization needed for setting the power to 0 at the end
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
 
         telemetry.addLine("Init Done");
 
@@ -122,8 +130,7 @@ public class RightBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .addDisplacementMarker(20, () -> retentionBarControl.setPosition(0.9))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
-                .forward(60)
-                .forward(19.5)// add arm lower in the future
+                .forward(79.5)
                 .build();
 
         // Wait for the game to start (driver presses PLAY)
@@ -180,6 +187,15 @@ public class RightBlueAuto extends LinearOpMode {
 
                     retentionBarControl.setPosition(0.9);
                     drive.followTrajectorySequence(Middle);
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 1100) {}
+                    armControl.setPower(0);
+                    grabberControl.setPower(1.0);
+                    safeWait(releasePixelWaitTime);
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.6);
+                    while (armControl.getCurrentPosition() > 125){}
+                    armControl.setPower(0.0);
 
 
                     stage = "parked";
@@ -189,6 +205,15 @@ public class RightBlueAuto extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectorySequence(Right);
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 1100) {}
+                    armControl.setPower(0);
+                    grabberControl.setPower(1.0);
+                    safeWait(releasePixelWaitTime);
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.6);
+                    while (armControl.getCurrentPosition() > 125){}
+                    armControl.setPower(0.0);
 
                     stage = "parked";
                     break;
@@ -197,6 +222,16 @@ public class RightBlueAuto extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectorySequence(Left);
+                    telemetry.addLine("Should be raising Arm");
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 1100) {}
+                    armControl.setPower(0);
+                    grabberControl.setPower(1.0);
+                    safeWait(releasePixelWaitTime);
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.6);
+                    while (armControl.getCurrentPosition() > 125){}
+                    armControl.setPower(0.0);
 
                     stage = "parked";
                     break;

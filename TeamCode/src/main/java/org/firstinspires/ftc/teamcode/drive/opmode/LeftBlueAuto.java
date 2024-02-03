@@ -31,22 +31,20 @@ public class LeftBlueAuto extends LinearOpMode {
     //Set up object detection
     private static final boolean USE_WEBCAM = true;
     private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/light_blue_cone.tflite";
-    private static final String[] LABELS = {
-            "Light Blue Cone",
-    };
+    private static final String[] LABELS = {"Light Blue Cone"};
     //declare camera detection stuff
     private TfodProcessor tfod;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
 
     //declare motors
-    private DcMotor frontRight;
-    private DcMotor frontLeft;
-    private DcMotor backRight;
-    private DcMotor backLeft;
+    private DcMotor frontRight, frontLeft, backRight, backLeft;
     private DcMotor armControl;
-    //declare end effectors
+
+    //declare end effector
     private CRServo grabberControl;
+
+    private long releasePixelWaitTime = 1000;//milliseconds
 
     //declare retention bar
     private Servo retentionBarControl;
@@ -54,8 +52,6 @@ public class LeftBlueAuto extends LinearOpMode {
     //declare imu
     private IMU imu;
 
-    //save which cone position was detected so proper april tag can be done
-    private int coneLocation = -1;
 
     //For Switch Case
     private String stage = "detectionInit";
@@ -65,15 +61,7 @@ public class LeftBlueAuto extends LinearOpMode {
     private AprilTagDetection targetAprilTag;
 
     //Used to end the auto
-    private final boolean doneWithAuto = false;
-
-    //Given 3inch diameter mechanum wheels, 5000 ticks goes ~91 in
-    //Therefore ~54.94505 ticks per inch
-    double TICKINCONVERSION = 54.94505;
-
-    double STRAFEINCONVERSION = 60.000;
-
-    double aprilTagStrafe = 0;
+    private boolean doneWithAuto = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -88,7 +76,6 @@ public class LeftBlueAuto extends LinearOpMode {
         updateOrientation();
 
         //init end effectors
-        //grabberControlLeft = hardwareMap.get(Servo.class, "grabberControlLeft");
         grabberControl = hardwareMap.get(CRServo.class, "grabberControl");
 
         //init retention bar
@@ -96,41 +83,30 @@ public class LeftBlueAuto extends LinearOpMode {
 
         //init motors
         armControl = hardwareMap.get(DcMotor.class, "armControl");
-        /*
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+
+        //Motor initialization needed for setting the power to 0 at the end
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        //Reversing right side so that runTo is positive
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        //Make sure motors are set up at default
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        */
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+
         telemetry.addLine("Init Done");
 
         telemetry.update();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-
-
         TrajectorySequence Right = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(-90))
                 .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
-                .forward(7.75)
+                .forward(6)
                 .forward(-8.3)
                 .turn(Math.toRadians(90))
                 .forward(23.5)
                 .turn(Math.toRadians(-90))
-                .forward(-77.5 + 48.0)
+                .forward(-77.75+48.0)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(20.5)
                 .build();
@@ -144,7 +120,7 @@ public class LeftBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(-90))
                 .forward(23.5)
                 .turn(Math.toRadians(-90))
-                .forward(-79 + 48.0)
+                .forward(-78.75+48.0)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(31.5)
                 .build();
@@ -154,8 +130,7 @@ public class LeftBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .addDisplacementMarker(20, () -> retentionBarControl.setPosition(0.9))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
-                .forward(60 - 48.0)
-                .forward(19)// add arm lower in the future
+                .forward(79.5-48.0)
                 .build();
 
         // Wait for the game to start (driver presses PLAY)
@@ -169,7 +144,7 @@ public class LeftBlueAuto extends LinearOpMode {
             telemetry.update();
 
             //Controls how long the code waits before checking if the detection model has recognized something or not
-            long recogCheckWait = 8000;
+            long recogCheckWait = 5000;
             switch(stage){
                 case "detectionInit":
                     startTime = System.currentTimeMillis();
@@ -207,47 +182,62 @@ public class LeftBlueAuto extends LinearOpMode {
                     }
                     break;
                 case "middleSpike":
-                    coneLocation = 2;
+                    telemetry.addLine("We going middle");
+                    telemetry.update();
+
                     retentionBarControl.setPosition(0.9);
                     drive.followTrajectorySequence(Middle);
-                    armControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
-                    //grabberControlLeft.setPosition(0.1);
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 1100) {}
+                    armControl.setPower(0);
                     grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
+                    safeWait(releasePixelWaitTime);
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.6);
+                    while (armControl.getCurrentPosition() > 125){}
                     armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
+
+
                     stage = "parked";
                     break;
                 case "rightSpike":
-                    coneLocation = 3;
-                    drive.followTrajectorySequence(Right);
                     telemetry.addLine("We going right");
                     telemetry.update();
-                    armControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
-                    //grabberControlLeft.setPosition(0.1);
+
+                    drive.followTrajectorySequence(Right);
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 1100) {}
+                    armControl.setPower(0);
                     grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
+                    safeWait(releasePixelWaitTime);
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.6);
+                    while (armControl.getCurrentPosition() > 125){}
                     armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
+
                     stage = "parked";
                     break;
                 case "leftSpike":
-                    coneLocation = 1;
                     telemetry.addLine("We going left");
                     telemetry.update();
+
                     drive.followTrajectorySequence(Left);
-                    armControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() < 1500) {}
-                    armControl.setPower(-1.0);
-                    //grabberControlLeft.setPosition(0.1);
+                    telemetry.addLine("Should be raising Arm");
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 1100) {}
+                    armControl.setPower(0);
                     grabberControl.setPower(1.0);
-                    while (armControl.getCurrentPosition() > 200) {}
+                    safeWait(releasePixelWaitTime);
+                    grabberControl.setPower(0);
+                    armControl.setPower(-0.6);
+                    while (armControl.getCurrentPosition() > 125){}
                     armControl.setPower(0.0);
-                    grabberControl.setPower(0.0);
+
+                    stage = "parked";
+                    break;
+                case "park":
+                    //Write code to park the robot
+                    //I don't think this will be needed since we will already be inside the park zone when we place the pixel
                     stage = "parked";
                     break;
                 case "parked":
@@ -256,9 +246,12 @@ public class LeftBlueAuto extends LinearOpMode {
                     frontLeft.setPower(0);
                     backRight.setPower(0);
                     backLeft.setPower(0);
-                    requestOpModeStop();
                     //Check if this code works
                     //this should forever just loop
+                    stage = "done";
+                    break;
+                case "done":
+                    doneWithAuto = true;
                     break;
                 default:
                     telemetry.addLine("Something went wrong");
@@ -285,8 +278,15 @@ public class LeftBlueAuto extends LinearOpMode {
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-    //Check the scope that this function should be at
-    //Power should be between 0.0 and 1.0
+
+    //waitTime is in Milliseconds
+    private void safeWait(long waitTime){
+        long startTime = System.currentTimeMillis();
+        long curTime = System.currentTimeMillis();
+        while(curTime - startTime < waitTime){
+            curTime = System.currentTimeMillis();
+        }
+    }
     //Updates the orientation of the robot for the IMU
     private void updateOrientation() {
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -312,7 +312,7 @@ public class LeftBlueAuto extends LinearOpMode {
 
                 // The following default settings are available to un-comment and edit as needed to
                 // set parameters for custom models.
-                //.setModelLabels(LABELS)
+                .setModelLabels(LABELS)
                 //.setIsModelTensorFlow2(true)
                 //.setIsModelQuantized(true)
                 //.setModelInputSize(300)
@@ -378,48 +378,4 @@ public class LeftBlueAuto extends LinearOpMode {
 
     }   // end method telemetryTfod()
 
-
-    //Initialize the AprilTag processor
-    private void initAprilTag() {
-
-        // Create the AprilTag processor the easy way.
-        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
-
-        // Create the vision portal the easy way.
-        if (USE_WEBCAM) {
-            visionPortal = VisionPortal.easyCreateWithDefaults(
-                    hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
-        } else {
-            visionPortal = VisionPortal.easyCreateWithDefaults(
-                    BuiltinCameraDirection.BACK, aprilTag);
-        }
-
-    }   // end method initAprilTag()
-
-    //Add telemetry about AprilTag detections
-    @SuppressLint("DefaultLocale")
-    private void telemetryAprilTag() {
-
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
-
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
-            }
-        }   // end for() loop
-
-        // Add "key" information to telemetry
-        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
-        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-        telemetry.addLine("RBE = Range, Bearing & Elevation");
-
-    }   // end method telemetryAprilTag()
 }
