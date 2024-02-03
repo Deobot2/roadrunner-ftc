@@ -151,7 +151,7 @@ public class RightBlueAuto extends LinearOpMode {
             telemetry.addData("rBBasePosition",rBBasePosition);
 
             //Controls how long the code waits before checking if the detection model has recognized something or not
-            long recogCheckWait = 5000;
+            long recogCheckWait = 10000;
             switch(stage){
                 case "detectionInit":
                     startTime = System.currentTimeMillis();
