@@ -122,7 +122,7 @@ public class RightBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(-90))
                 .forward(23.5)
                 .turn(Math.toRadians(-90))
-                .forward(-78.75)
+                .forward(-78.0)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(31.5)
                 .build();
@@ -133,6 +133,7 @@ public class RightBlueAuto extends LinearOpMode {
                 .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.8))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(79.5)
+                .strafeRight(3)
                 .build();
 
         // Wait for the game to start (driver presses PLAY)
