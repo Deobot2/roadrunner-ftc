@@ -194,7 +194,7 @@ public class RightBlueAuto extends LinearOpMode {
                     retentionBarControl.setPosition(rBBasePosition+0.8);
                     drive.followTrajectorySequence(Middle);
                     armControl.setPower(0.6);
-                    while (armControl.getCurrentPosition() < 1100) {}
+                    while (armControl.getCurrentPosition() < 1500) {}
                     armControl.setPower(0);
                     grabberControl.setPower(1.0);
                     safeWait(releasePixelWaitTime);
@@ -212,7 +212,7 @@ public class RightBlueAuto extends LinearOpMode {
 
                     drive.followTrajectorySequence(Right);
                     armControl.setPower(0.6);
-                    while (armControl.getCurrentPosition() < 1100) {}
+                    while (armControl.getCurrentPosition() < 1500) {}
                     armControl.setPower(0);
                     grabberControl.setPower(1.0);
                     safeWait(releasePixelWaitTime);
@@ -230,7 +230,7 @@ public class RightBlueAuto extends LinearOpMode {
                     drive.followTrajectorySequence(Left);
                     telemetry.addLine("Should be raising Arm");
                     armControl.setPower(0.6);
-                    while (armControl.getCurrentPosition() < 1100) {}
+                    while (armControl.getCurrentPosition() < 1500) {}
                     armControl.setPower(0);
                     grabberControl.setPower(1.0);
                     safeWait(releasePixelWaitTime);
