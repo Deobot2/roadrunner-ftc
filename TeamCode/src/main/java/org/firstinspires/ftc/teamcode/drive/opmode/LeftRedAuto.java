@@ -34,7 +34,6 @@ public class LeftRedAuto extends LinearOpMode {
     private static final String[] LABELS = {"Red Cone"};
     //declare camera detection stuff
     private TfodProcessor tfod;
-    private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
 
     //declare motors
@@ -103,23 +102,23 @@ public class LeftRedAuto extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .forward(23.5)
                 .turn(Math.toRadians(90))
-                .forward(-77.5)
+                .forward(-78.25)
                 .turn(Math.toRadians(-180))
-                .strafeLeft(20.5)
+                .strafeRight(20.5)
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(90))
                 .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
-                .forward(7.75)
+                .forward(6)
                 .forward(-8.3)
                 .turn(Math.toRadians(-90))
                 .forward(23.5)
                 .turn(Math.toRadians(90))
-                .forward(-79)
+                .forward(-78.25)
                 .turn(Math.toRadians(-180))
-                .strafeLeft(31.5)
+                .strafeRight(31.5)
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(32.5)
@@ -142,6 +141,8 @@ public class LeftRedAuto extends LinearOpMode {
             telemetry.update();
 
             rBBasePosition = retentionBarControl.getPosition();
+
+            telemetry.addData("rBBasePosition",rBBasePosition);
 
             //Controls how long the code waits before checking if the detection model has recognized something or not
             long recogCheckWait = 5000;
@@ -215,6 +216,7 @@ public class LeftRedAuto extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectorySequence(Left);
+                    telemetry.addLine("Should be raising Arm");
                     armControl.setPower(0.4);
                     while (armControl.getCurrentPosition() < 900) {}
                     armControl.setPower(0);

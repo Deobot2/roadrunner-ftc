@@ -180,7 +180,7 @@ public class RightBlueAuto extends LinearOpMode {
 
                     retentionBarControl.setPosition(0.9);
                     drive.followTrajectorySequence(Middle);
-                    requestOpModeStop();
+
 
                     stage = "parked";
                     break;
