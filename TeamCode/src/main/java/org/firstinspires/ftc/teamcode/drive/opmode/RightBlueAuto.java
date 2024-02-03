@@ -93,7 +93,7 @@ public class RightBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(-90))
                 .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
-                .forward(7.75)
+                .forward(6)
                 .forward(-8.3)
                 .turn(Math.toRadians(90))
                 .forward(23.5)

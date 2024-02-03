@@ -100,9 +100,27 @@ public class StateDriverControl extends LinearOpMode {
                 manualControl = 0.5;
             }
             double armPower = (up - down + manualControl);
+
+            double hangingControlPower = 0;
+            hangingControlPower = gamepad2.left_trigger - gamepad2.right_trigger;
+
+            if(gamepad2.y){
+                hanging = true;
+            }
+            if(gamepad2.a){
+                hanging = false;
+            }
+            if(hanging){
+                hangingLeft.setPower(hangingControlPower);
+                hangingRight.setPower(hangingControlPower);
+            }
             if(!hanging){
                 armControl.setPower(armPower*0.5);
             }
+
+
+
+
 
 
 
@@ -173,19 +191,7 @@ public class StateDriverControl extends LinearOpMode {
 
             grabberControl.setPower(grabberControlPower);
 
-            if(gamepad2.y){
-                hanging = true;
-            }
-            if(gamepad2.a){
-                hanging = false;
-            }
-            double hangingControlPower = 0;
-            hangingControlPower = gamepad2.left_trigger - gamepad2.right_trigger;
 
-            if(hanging){
-                hangingLeft.setPower(hangingControlPower);
-                hangingRight.setPower(hangingControlPower);
-            }
 
 
 
