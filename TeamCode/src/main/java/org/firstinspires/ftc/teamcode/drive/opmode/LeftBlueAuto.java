@@ -105,9 +105,8 @@ public class LeftBlueAuto extends LinearOpMode {
                 .forward(-8.3)
                 .turn(Math.toRadians(90))
                 .forward(23.5)
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(90))
                 .forward(-77.75+48.0)
-                .turn(Math.toRadians(-180))
                 .strafeLeft(20.5)
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
@@ -119,9 +118,8 @@ public class LeftBlueAuto extends LinearOpMode {
                 .forward(-8.3)
                 .turn(Math.toRadians(-90))
                 .forward(23.5)
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(90))
                 .forward(-78.75+48.0)
-                .turn(Math.toRadians(-180))
                 .strafeLeft(31.5)
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
