@@ -98,7 +98,7 @@ public class RightBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .forward(23.5)
                 .turn(Math.toRadians(-90))
-                .forward(-77.5)
+                .forward(-77.75)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(20.5)
                 .build();
@@ -112,7 +112,7 @@ public class RightBlueAuto extends LinearOpMode {
                 .turn(Math.toRadians(-90))
                 .forward(23.5)
                 .turn(Math.toRadians(-90))
-                .forward(-79)
+                .forward(-78.75)
                 .turn(Math.toRadians(-180))
                 .strafeLeft(31.5)
                 .build();

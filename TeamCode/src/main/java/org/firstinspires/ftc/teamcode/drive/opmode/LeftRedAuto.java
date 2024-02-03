@@ -102,9 +102,9 @@ public class LeftRedAuto extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .forward(23.5)
                 .turn(Math.toRadians(90))
-                .forward(-78.25)
+                .forward(-78.75)
                 .turn(Math.toRadians(-180))
-                .strafeRight(20.5)
+                .strafeRight(31.5)
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
@@ -118,7 +118,7 @@ public class LeftRedAuto extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .forward(-78.25)
                 .turn(Math.toRadians(-180))
-                .strafeRight(31.5)
+                .strafeRight(20.5)
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(32.5)
@@ -183,7 +183,7 @@ public class LeftRedAuto extends LinearOpMode {
                     retentionBarControl.setPosition(rBBasePosition+0.4);
                     drive.followTrajectorySequence(Middle);
                     armControl.setPower(0.6);
-                    while (armControl.getCurrentPosition() < 900) {}
+                    while (armControl.getCurrentPosition() < 1100) {}
                     armControl.setPower(0);
                     grabberControl.setPower(1.0);
                     safeWait(releasePixelWaitTime);
@@ -199,13 +199,13 @@ public class LeftRedAuto extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectorySequence(Right);
-                    armControl.setPower(0.4);
-                    while (armControl.getCurrentPosition() < 900) {}
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 1100) {}
                     armControl.setPower(0);
                     grabberControl.setPower(1.0);
                     safeWait(releasePixelWaitTime);
                     grabberControl.setPower(0);
-                    armControl.setPower(-0.4);
+                    armControl.setPower(-0.6);
                     while (armControl.getCurrentPosition() > 125){}
                     armControl.setPower(0.0);
 
@@ -217,13 +217,13 @@ public class LeftRedAuto extends LinearOpMode {
 
                     drive.followTrajectorySequence(Left);
                     telemetry.addLine("Should be raising Arm");
-                    armControl.setPower(0.4);
-                    while (armControl.getCurrentPosition() < 900) {}
+                    armControl.setPower(0.6);
+                    while (armControl.getCurrentPosition() < 1100) {}
                     armControl.setPower(0);
                     grabberControl.setPower(1.0);
                     safeWait(releasePixelWaitTime);
                     grabberControl.setPower(0);
-                    armControl.setPower(-0.4);
+                    armControl.setPower(-0.6);
                     while (armControl.getCurrentPosition() > 125){}
                     armControl.setPower(0.0);
 
