@@ -95,7 +95,7 @@ public class LeftRedAuto extends LinearOpMode {
         TrajectorySequence Right = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(-90))
-                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.8))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(7.75)
                 .forward(-8.3)
@@ -104,12 +104,12 @@ public class LeftRedAuto extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .forward(-78.75)
                 .turn(Math.toRadians(-180))
-                .strafeRight(31.5)
+                .strafeRight(46.5)
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(90))
-                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.8))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(6)
                 .forward(-8.3)
@@ -124,7 +124,7 @@ public class LeftRedAuto extends LinearOpMode {
                 .forward(32.5)
                 .forward(-9.3)
                 .turn(Math.toRadians(-90))
-                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.8))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(60)
                 .forward(19.75)// add arm lower in the future
@@ -180,9 +180,9 @@ public class LeftRedAuto extends LinearOpMode {
                     telemetry.addLine("We going middle");
                     telemetry.update();
 
-                    retentionBarControl.setPosition(rBBasePosition+0.4);
+                    retentionBarControl.setPosition(rBBasePosition+0.8);
                     drive.followTrajectorySequence(Middle);
-                    armControl.setPower(0.6);
+                    armControl.setPower(0.8);
                     while (armControl.getCurrentPosition() < 1100) {}
                     armControl.setPower(0);
                     grabberControl.setPower(1.0);

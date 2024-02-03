@@ -49,6 +49,9 @@ public class LeftBlueAuto extends LinearOpMode {
     //declare retention bar
     private Servo retentionBarControl;
 
+    //retentionBarBasePosition
+    private double rBBasePosition;
+
     //declare imu
     private IMU imu;
 
@@ -57,8 +60,6 @@ public class LeftBlueAuto extends LinearOpMode {
     private String stage = "detectionInit";
 
     private long startTime;
-
-    private AprilTagDetection targetAprilTag;
 
     //Used to end the auto
     private boolean doneWithAuto = false;
@@ -99,8 +100,8 @@ public class LeftBlueAuto extends LinearOpMode {
         TrajectorySequence Right = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(-90))
-                .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
-                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
+                .addDisplacementMarker(25, () -> retentionBarControl.setPosition(rBBasePosition+0.8))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(6)
                 .forward(-8.3)
                 .turn(Math.toRadians(90))
@@ -112,8 +113,8 @@ public class LeftBlueAuto extends LinearOpMode {
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(90))
-                .addDisplacementMarker(25, () -> retentionBarControl.setPosition(0.9))
-                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
+                .addDisplacementMarker(25, () -> retentionBarControl.setPosition(rBBasePosition+0.8))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(7.75)
                 .forward(-8.3)
                 .turn(Math.toRadians(-90))
@@ -126,8 +127,8 @@ public class LeftBlueAuto extends LinearOpMode {
                 .forward(32.5)
                 .forward(-9.3)
                 .turn(Math.toRadians(90))
-                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(0.9))
-                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(0.5))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.8))
+                .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(79.5-48.0)
                 .build();
 
@@ -140,6 +141,10 @@ public class LeftBlueAuto extends LinearOpMode {
 
             telemetry.addData("Stage",stage);
             telemetry.update();
+
+            rBBasePosition = retentionBarControl.getPosition();
+
+            telemetry.addData("rBBasePosition",rBBasePosition);
 
             //Controls how long the code waits before checking if the detection model has recognized something or not
             long recogCheckWait = 5000;
@@ -183,7 +188,7 @@ public class LeftBlueAuto extends LinearOpMode {
                     telemetry.addLine("We going middle");
                     telemetry.update();
 
-                    retentionBarControl.setPosition(0.9);
+                    retentionBarControl.setPosition(rBBasePosition+0.8);
                     drive.followTrajectorySequence(Middle);
                     armControl.setPower(0.6);
                     while (armControl.getCurrentPosition() < 1100) {}

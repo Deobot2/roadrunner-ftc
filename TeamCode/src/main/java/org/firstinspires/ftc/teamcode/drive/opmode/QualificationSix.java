@@ -26,7 +26,7 @@ import java.util.*;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 
 @Autonomous
-public class RightRedAuto extends LinearOpMode {
+public class QualificationSix extends LinearOpMode {
 
     //Set up object detection
     private static final boolean USE_WEBCAM = true;
@@ -95,36 +95,39 @@ public class RightRedAuto extends LinearOpMode {
         TrajectorySequence Right = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(-90))
-                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.8))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(7.75)
                 .forward(-8.3)
-                .turn(Math.toRadians(90))
+                /*.turn(Math.toRadians(90))
                 .forward(23.5)
-                .turn(Math.toRadians(-90))
-                .forward(-78.75+48.0)
-                .strafeRight(31.5)
+                .turn(Math.toRadians(90))
+                .forward(-78.75)
+                .turn(Math.toRadians(-180))
+                .strafeRight(46.5)*/
                 .build();
         TrajectorySequence Left = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(26.0)
                 .turn(Math.toRadians(90))
-                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.8))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
                 .forward(6)
                 .forward(-8.3)
-                .turn(Math.toRadians(-90))
+                /*.turn(Math.toRadians(-90))
                 .forward(23.5)
-                .turn(Math.toRadians(-90))
-                .forward(-78.25+48.0)
-                .strafeRight(20.5)
+                .turn(Math.toRadians(90))
+                .forward(-78.25)
+                .turn(Math.toRadians(-180))
+                .strafeRight(20.5)*/
                 .build();
         TrajectorySequence Middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .forward(32.5)
                 .forward(-9.3)
-                .turn(Math.toRadians(-90))
-                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.8))
+                //.turn(Math.toRadians(-90))
+                .addDisplacementMarker(20, () -> retentionBarControl.setPosition(rBBasePosition+0.4))
                 .addDisplacementMarker(60, () -> retentionBarControl.setPosition(rBBasePosition))
-                .forward(79.75-48.0)
+                //.forward(60)
+                //.forward(19.75)// add arm lower in the future
                 .build();
 
         // Wait for the game to start (driver presses PLAY)
@@ -177,9 +180,9 @@ public class RightRedAuto extends LinearOpMode {
                     telemetry.addLine("We going middle");
                     telemetry.update();
 
-                    retentionBarControl.setPosition(rBBasePosition+0.8);
+                    retentionBarControl.setPosition(rBBasePosition+0.4);
                     drive.followTrajectorySequence(Middle);
-                    armControl.setPower(0.6);
+                    /*armControl.setPower(0.6);
                     while (armControl.getCurrentPosition() < 1100) {}
                     armControl.setPower(0);
                     grabberControl.setPower(1.0);
@@ -187,7 +190,7 @@ public class RightRedAuto extends LinearOpMode {
                     grabberControl.setPower(0);
                     armControl.setPower(-0.6);
                     while (armControl.getCurrentPosition() > 125){}
-                    armControl.setPower(0.0);
+                    armControl.setPower(0.0);*/
 
                     stage = "parked";
                     break;
@@ -196,7 +199,7 @@ public class RightRedAuto extends LinearOpMode {
                     telemetry.update();
 
                     drive.followTrajectorySequence(Right);
-                    armControl.setPower(0.6);
+                    /*armControl.setPower(0.6);
                     while (armControl.getCurrentPosition() < 1100) {}
                     armControl.setPower(0);
                     grabberControl.setPower(1.0);
@@ -204,7 +207,7 @@ public class RightRedAuto extends LinearOpMode {
                     grabberControl.setPower(0);
                     armControl.setPower(-0.6);
                     while (armControl.getCurrentPosition() > 125){}
-                    armControl.setPower(0.0);
+                    armControl.setPower(0.0);*/
 
                     stage = "parked";
                     break;
@@ -214,7 +217,7 @@ public class RightRedAuto extends LinearOpMode {
 
                     drive.followTrajectorySequence(Left);
                     telemetry.addLine("Should be raising Arm");
-                    armControl.setPower(0.6);
+                    /*armControl.setPower(0.6);
                     while (armControl.getCurrentPosition() < 1100) {}
                     armControl.setPower(0);
                     grabberControl.setPower(1.0);
@@ -222,7 +225,7 @@ public class RightRedAuto extends LinearOpMode {
                     grabberControl.setPower(0);
                     armControl.setPower(-0.6);
                     while (armControl.getCurrentPosition() > 125){}
-                    armControl.setPower(0.0);
+                    armControl.setPower(0.0);*/
 
                     stage = "parked";
                     break;

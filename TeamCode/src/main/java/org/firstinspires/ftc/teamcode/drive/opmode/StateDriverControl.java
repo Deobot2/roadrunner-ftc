@@ -171,7 +171,7 @@ public class StateDriverControl extends LinearOpMode {
             }
             if(gamepad2.right_bumper){
                 //openRetentionBar(false);
-                retentionBarControl.setPosition(retentionBarStartingPosition + 0.4);
+                retentionBarControl.setPosition(retentionBarStartingPosition + 0.8);
             }
             if(gamepad2.x && gamepad2.b){
                 retentionBarControl.setPosition(0);
